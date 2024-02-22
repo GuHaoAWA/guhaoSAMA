@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.guhao.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "guhao.refmap.json",
+  "mixins": [
+    "BattojutsuPassiveMixin",
+    "EnderPearlMixin",
+    "GuardGuHaoMixin"
+  ],
+  "client": [
+    "TrailMixin"
+  ],
+  "minVersion": "0.8"
+}
