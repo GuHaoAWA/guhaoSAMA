@@ -1,8 +1,7 @@
 package com.guhao.init;
 
-import com.guhao.client.particle.par.EyeParticle;
-import com.guhao.client.particle.par.RingParticle;
-import com.guhao.client.particle.par.TrailParticleGuhao;
+
+import com.guhao.client.particle.par.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -16,19 +15,34 @@ import yesman.epicfight.particle.HitParticleType;
 
 import static com.guhao.Guhao.MODID;
 
-
 public class ParticleType {
     public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLES;
     public static final RegistryObject<SimpleParticleType> TRAIL_GUHAO;
+    public static final RegistryObject<SimpleParticleType> TRAIL_GUHAO_BLOOM;
     public static final RegistryObject<SimpleParticleType> EYE;
+    public static final RegistryObject<SimpleParticleType> TWO_EYE;
     public static final RegistryObject<SimpleParticleType> RING;
+    public static final RegistryObject<SimpleParticleType> RED_RING;
+    public static final RegistryObject<SimpleParticleType> BLOOD_FIRE_FLAME;
+    public static final RegistryObject<SimpleParticleType> BLOOD_JUDGEMENT;
+    public static final RegistryObject<SimpleParticleType> ONE_JC_BLOOD_JUDGEMENT;
+    public static final RegistryObject<SimpleParticleType> ENTITY_AFTER_IMG_BLOOD;
+    public static final RegistryObject<SimpleParticleType> GUHAO_LASER;
 
     @OnlyIn(Dist.CLIENT)
     public static void RP(ParticleFactoryRegisterEvent event) {
         ParticleEngine PE = Minecraft.getInstance().particleEngine;
-        PE.register((net.minecraft.core.particles.ParticleType<SimpleParticleType>) TRAIL_GUHAO.get(), TrailParticleGuhao.Provider::new);
-        PE.register((net.minecraft.core.particles.ParticleType<SimpleParticleType>) EYE.get(), EyeParticle.EyeParticleProvider::new);
-        PE.register((net.minecraft.core.particles.ParticleType<SimpleParticleType>) RING.get(), RingParticle.RingParticleProvider::new);
+        PE.register(TRAIL_GUHAO.get(), TrailParticleGuhao.Provider::new);
+        PE.register(TRAIL_GUHAO_BLOOM.get(), BloomTrailParticleGuhao.Provider::new);
+        PE.register(EYE.get(), EyeParticle.EyeParticleProvider::new);
+        PE.register(TWO_EYE.get(), TwoEyeParticle.EyeParticleProvider::new);
+        PE.register(RING.get(), RingParticle.RingParticleProvider::new);
+        PE.register(RED_RING.get(), RedRingParticle.RedRingParticleProvider::new);
+        PE.register(BLOOD_FIRE_FLAME.get(), BloodFireParticle.BloodFireParticleProvider::new);
+        PE.register(BLOOD_JUDGEMENT.get(), BloodJudgementParticle.Provider::new);
+        PE.register(ONE_JC_BLOOD_JUDGEMENT.get(), ONEJCBladeTrail.Provider::new);
+        PE.register(ENTITY_AFTER_IMG_BLOOD.get(), After_Image_BloodParticle.Provider::new);
+        PE.register(GUHAO_LASER.get(), Guhao_Laser.Provider::new);
     }
 
     public ParticleType() {
@@ -36,14 +50,16 @@ public class ParticleType {
 
     static {
         PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, MODID);
-        TRAIL_GUHAO = PARTICLES.register("trail_guhao", () -> {
-            return new SimpleParticleType(true);
-        });
-        EYE = PARTICLES.register("eye", () -> {
-            return new HitParticleType(true, HitParticleType.RANDOM_WITHIN_BOUNDING_BOX, HitParticleType.ZERO);
-        });
-        RING = PARTICLES.register("ring", () -> {
-            return new SimpleParticleType(true);
-        });
+        TRAIL_GUHAO = PARTICLES.register("trail_guhao", () -> new SimpleParticleType(true));
+        TRAIL_GUHAO_BLOOM = PARTICLES.register("trail_guhao_bloom", () -> new SimpleParticleType(true));
+        EYE = PARTICLES.register("eye", () -> new HitParticleType(true, HitParticleType.RANDOM_WITHIN_BOUNDING_BOX, HitParticleType.ZERO));
+        RING = PARTICLES.register("ring", () -> new SimpleParticleType(true));
+        TWO_EYE = PARTICLES.register("two_eye", () -> new SimpleParticleType(true));
+        RED_RING = PARTICLES.register("red_ring", () -> new SimpleParticleType(true));
+        BLOOD_FIRE_FLAME = PARTICLES.register("blood_fire_flame", () -> new SimpleParticleType(true));
+        BLOOD_JUDGEMENT = PARTICLES.register("blood_judgement", () -> new SimpleParticleType(true));
+        ONE_JC_BLOOD_JUDGEMENT = PARTICLES.register("one_jc_blood_judgement", () -> new HitParticleType(true));
+        ENTITY_AFTER_IMG_BLOOD = PARTICLES.register("after_image_blood", () -> new SimpleParticleType(true));
+        GUHAO_LASER = PARTICLES.register("guhao_laser", () -> new SimpleParticleType(true));
     }
 }

@@ -49,14 +49,13 @@ public abstract class GuardGuHaoMixin extends Skill {
     public abstract void dealEvent(PlayerPatch<?> playerpatch, HurtEvent.Pre event, boolean advanced);
 
 
-    @Inject(at = @At("HEAD"), method = "guard", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "guard")
     public void mixin_guard(SkillContainer container, CapabilityItem itemCapability, HurtEvent.Pre event, float knockback, float impact, boolean advanced, CallbackInfo ci) {
-        ci.cancel();
         if (event.getPlayerPatch().getOriginal().getMainHandItem().getItem() == Items.GUHAO.get()) {
             DamageSource damageSource = (DamageSource) event.getDamageSource();
             if (isBlockableSource(damageSource, advanced)) {
                 ((ServerPlayerPatch) event.getPlayerPatch()).playSound(EpicFightSounds.CLASH, -0.06F, 0.12F);
-                ServerPlayer serveerPlayer = (ServerPlayer) ((ServerPlayerPatch) event.getPlayerPatch()).getOriginal();
+                ServerPlayer serveerPlayer = event.getPlayerPatch().getOriginal();
                 EpicFightParticles.EVISCERATE.get().spawnParticleWithArgument(serveerPlayer.getLevel(), HitParticleType.FRONT_OF_EYES, HitParticleType.ZERO, serveerPlayer, damageSource.getDirectEntity());
                 Entity var10 = damageSource.getDirectEntity();
                 if (var10 instanceof LivingEntity) {

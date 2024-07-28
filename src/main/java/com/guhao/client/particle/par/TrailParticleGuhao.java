@@ -1,32 +1,31 @@
 package com.guhao.client.particle.par;
 
-import com.dfdyz.epicacg.client.particle.BloomTrailParticle;
-import com.dfdyz.epicacg.client.render.EpicACGRenderType;
-import com.dfdyz.epicacg.client.render.pipeline.PostEffectPipelines;
+
 import com.google.common.collect.Lists;
 import com.guhao.client.particle.core.TextureSheetParticleN;
+import com.guhao.init.ParticleType;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector4f;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.Pose;
@@ -39,6 +38,7 @@ import yesman.epicfight.api.client.model.ItemSkins;
 import yesman.epicfight.api.utils.math.CubicBezierCurve;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
+import yesman.epicfight.client.particle.EpicFightParticleRenderTypes;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
-public class TrailParticleGuhao extends TextureSheetParticleN {
+public class TrailParticleGuhao extends TextureSheetParticle {
     private final Joint joint;
     private final TrailInfo trailInfo;
     private final StaticAnimation animation;
@@ -61,6 +61,7 @@ public class TrailParticleGuhao extends TextureSheetParticleN {
     protected TrailParticleGuhao(ClientLevel level, LivingEntityPatch<?> entitypatch, Joint joint, StaticAnimation animation, TrailInfo trailInfo, SpriteSet spriteSet) {
         super(level, 0, 0, 0);
 
+        this.alpha = 112.5f;
         this.joint = joint;
         this.entitypatch = entitypatch;
         this.animation = animation;
@@ -224,6 +225,7 @@ public class TrailParticleGuhao extends TextureSheetParticleN {
 
             visibleTrail = true;
         }
+        //////////////////////
         for (int i = 0; i < finalStartPositions.size(); i++) {
             Vec3 startPos = finalStartPositions.get(i);
             Vec3 endPos = finalEndPositions.get(i);
@@ -232,13 +234,14 @@ public class TrailParticleGuhao extends TextureSheetParticleN {
             double interval = 0.5; // 粒子之间的间隔
             // 计算粒子的方向和速度
             Vec3 direction = endPos.subtract(startPos).normalize();
-            double speed = 0.80; // 粒子的速度
+            double speed = 0.8; // 粒子的速度
             for (int j = 0; j < particleCount; j++) {
                 Vec3 particlePos = startPos.add(direction.scale(j * interval));
                 level.addParticle(EpicFightParticles.BLOOD.get(), true, particlePos.x, particlePos.y, particlePos.z, speed * direction.x, speed * direction.y, speed * direction.z);
                 if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, (entitypatch.getOriginal().getMainHandItem())) >= 1) {
-                    // 创建岩浆粒子，并设置位置和速度
-                    level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, true, particlePos.x, particlePos.y, particlePos.z, speed * direction.x, speed * direction.y, speed * direction.z);
+                    // 火！
+                    double firespeed = speed * 0.32;
+                    level.addParticle(ParticleType.BLOOD_FIRE_FLAME.get(), true, particlePos.x, particlePos.y, particlePos.z, firespeed * direction.x, firespeed * direction.y, firespeed * direction.z);
                 }
             }
 
@@ -251,51 +254,56 @@ public class TrailParticleGuhao extends TextureSheetParticleN {
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float partialTick) {
         if (this.visibleTrailEdges.size() >= 1) {
-            if (PostEffectPipelines.isActive() && ((LivingEntity)this.entitypatch.getOriginal()).isAlive()) {
-                EpicACGRenderType.getBloomRenderTypeByTexture(this.trailInfo.texturePath).callPipeline();
-                PoseStack poseStack = new PoseStack();
-                int light = 15728880;
-                this.setupPoseStack(poseStack, camera, partialTick);
-                Matrix4f matrix4f = poseStack.last().pose();
-                int edges = this.visibleTrailEdges.size() - 1;
-                boolean startFade = ((TrailEdge)this.visibleTrailEdges.get(0)).lifetime == 1;
-                boolean endFade = ((TrailEdge)this.visibleTrailEdges.get(edges)).lifetime == this.trailInfo.trailLifetime;
-                float startEdge = (startFade ? (float)(this.trailInfo.interpolateCount * 2) * partialTick : 0.0F) + this.startEdgeCorrection;
-                float endEdge = endFade ? Math.min((float)edges - (float)(this.trailInfo.interpolateCount * 2) * (1.0F - partialTick), (float)(edges - 1)) : (float)(edges - 1);
-                float interval = 1.0F / (endEdge - startEdge);
-                float fading = 1.0F;
-                if (this.animationEnd) {
+            TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
+            AbstractTexture abstracttexture = texturemanager.getTexture(this.trailInfo.texturePath);
+            RenderSystem.bindTexture(abstracttexture.getId());
+            RenderSystem.texParameter(3553, 10242, 33071);
+            RenderSystem.texParameter(3553, 10243, 33071);
+            RenderSystem.setShaderTexture(0, abstracttexture.getId());
+            PoseStack poseStack = new PoseStack();
+            int light = this.getLightColor(partialTick);
+            this.setupPoseStack(poseStack, camera, partialTick);
+            Matrix4f matrix4f = poseStack.last().pose();
+            int edges = this.visibleTrailEdges.size() - 1;
+            boolean startFade = ((TrailEdge)this.visibleTrailEdges.get(0)).lifetime == 1;
+            boolean endFade = ((TrailEdge)this.visibleTrailEdges.get(edges)).lifetime == this.trailInfo.trailLifetime;
+            float startEdge = (startFade ? (float)(this.trailInfo.interpolateCount * 2) * partialTick : 0.0F) + this.startEdgeCorrection;
+            float endEdge = endFade ? Math.min((float)edges - (float)(this.trailInfo.interpolateCount * 2) * (1.0F - partialTick), (float)(edges - 1)) : (float)(edges - 1);
+            float interval = 1.0F / (endEdge - startEdge);
+            float fading = 1.0F;
+            if (this.animationEnd) {
+                if (this.trailInfo.fadeTime > 0.0F) {
+                    fading = (float)this.lifetime / (float)this.trailInfo.trailLifetime;
+                } else {
                     fading = Mth.clamp(((float)this.lifetime + (1.0F - partialTick)) / (float)this.trailInfo.trailLifetime, 0.0F, 1.0F);
                 }
-
-                float partialStartEdge = interval * (startEdge % 1.0F);
-                float from = -partialStartEdge;
-                float to = -partialStartEdge + interval;
-
-                for(int i = (int)startEdge; i < (int)endEdge + 1; ++i) {
-                    TrailEdge e1 = (TrailEdge)this.visibleTrailEdges.get(i);
-                    TrailEdge e2 = (TrailEdge)this.visibleTrailEdges.get(i + 1);
-                    Vector4f pos1 = new Vector4f((float)e1.start.x, (float)e1.start.y, (float)e1.start.z, 1.0F);
-                    Vector4f pos2 = new Vector4f((float)e1.end.x, (float)e1.end.y, (float)e1.end.z, 1.0F);
-                    Vector4f pos3 = new Vector4f((float)e2.end.x, (float)e2.end.y, (float)e2.end.z, 1.0F);
-                    Vector4f pos4 = new Vector4f((float)e2.start.x, (float)e2.start.y, (float)e2.start.z, 1.0F);
-                    pos1.transform(matrix4f);
-                    pos2.transform(matrix4f);
-                    pos3.transform(matrix4f);
-                    pos4.transform(matrix4f);
-                    float alphaFrom = Mth.clamp(Mth.clamp(from, 0.0F, 1.0F) * this.alpha * fading, 0.0F, 1.0F);
-                    float alphaTo = Mth.clamp(Mth.clamp(to, 0.0F, 1.0F) * this.alpha * fading, 0.0F, 1.0F);
-                    alphaFrom = Mth.sqrt(alphaFrom);
-                    alphaTo = Mth.sqrt(alphaTo);
-                    vertexConsumer.vertex((double)pos1.x(), (double)pos1.y(), (double)pos1.z()).color(this.rCol, this.gCol, this.bCol, alphaFrom).uv(from, 1.0F).uv2(light).endVertex();
-                    vertexConsumer.vertex((double)pos2.x(), (double)pos2.y(), (double)pos2.z()).color(this.rCol, this.gCol, this.bCol, alphaFrom).uv(from, 0.0F).uv2(light).endVertex();
-                    vertexConsumer.vertex((double)pos3.x(), (double)pos3.y(), (double)pos3.z()).color(this.rCol, this.gCol, this.bCol, alphaTo).uv(to, 0.0F).uv2(light).endVertex();
-                    vertexConsumer.vertex((double)pos4.x(), (double)pos4.y(), (double)pos4.z()).color(this.rCol, this.gCol, this.bCol, alphaTo).uv(to, 1.0F).uv2(light).endVertex();
-                    from += interval;
-                    to += interval;
-                }
-
             }
+
+            float partialStartEdge = interval * (startEdge % 1.0F);
+            float from = -partialStartEdge;
+            float to = -partialStartEdge + interval;
+
+            for(int i = (int)startEdge; i < (int)endEdge + 1; ++i) {
+                TrailEdge e1 = (TrailEdge)this.visibleTrailEdges.get(i);
+                TrailEdge e2 = (TrailEdge)this.visibleTrailEdges.get(i + 1);
+                Vector4f pos1 = new Vector4f((float)e1.start.x, (float)e1.start.y, (float)e1.start.z, 1.0F);
+                Vector4f pos2 = new Vector4f((float)e1.end.x, (float)e1.end.y, (float)e1.end.z, 1.0F);
+                Vector4f pos3 = new Vector4f((float)e2.end.x, (float)e2.end.y, (float)e2.end.z, 1.0F);
+                Vector4f pos4 = new Vector4f((float)e2.start.x, (float)e2.start.y, (float)e2.start.z, 1.0F);
+                pos1.transform(matrix4f);
+                pos2.transform(matrix4f);
+                pos3.transform(matrix4f);
+                pos4.transform(matrix4f);
+                float alphaFrom = Mth.clamp(from, 0.0F, 1.0F);
+                float alphaTo = Mth.clamp(to, 0.0F, 1.0F);
+                vertexConsumer.vertex((double)pos1.x(), (double)pos1.y(), (double)pos1.z()).uv(from, 1.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).uv2(light).endVertex();
+                vertexConsumer.vertex((double)pos2.x(), (double)pos2.y(), (double)pos2.z()).uv(from, 0.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).uv2(light).endVertex();
+                vertexConsumer.vertex((double)pos3.x(), (double)pos3.y(), (double)pos3.z()).uv(to, 0.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).uv2(light).endVertex();
+                vertexConsumer.vertex((double)pos4.x(), (double)pos4.y(), (double)pos4.z()).uv(to, 1.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).uv2(light).endVertex();
+                from += interval;
+                to += interval;
+            }
+
         }
     }
 
@@ -307,7 +315,7 @@ public class TrailParticleGuhao extends TextureSheetParticleN {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return EpicACGRenderType.getBloomRenderTypeByTexture(this.trailInfo.texturePath);
+            return EpicFightParticleRenderTypes.TRAIL;
     }
 
     protected void setupPoseStack(PoseStack poseStack, Camera camera, float partialTicks) {

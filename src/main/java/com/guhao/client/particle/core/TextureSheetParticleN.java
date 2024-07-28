@@ -9,7 +9,6 @@ public abstract class TextureSheetParticleN extends MagicRuneParticle {
     protected TextureAtlasSprite sprite;
 
 
-
     protected TextureSheetParticleN(ClientLevel p_108323_, double p_108324_, double p_108325_, double p_108326_) {
         super(p_108323_, p_108324_, p_108325_, p_108326_);
     }

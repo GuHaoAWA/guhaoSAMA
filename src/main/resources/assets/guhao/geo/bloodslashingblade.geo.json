@@ -6,7 +6,7 @@
 				"identifier": "geometry.bloodslashingblade",
 				"texture_width": 8,
 				"texture_height": 8,
-				"visible_bounds_width": 4,
+				"visible_bounds_width": 5,
 				"visible_bounds_height": 4,
 				"visible_bounds_offset": [0, 1, 0]
 			},

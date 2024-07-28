@@ -1,6 +1,8 @@
 package com.guhao.renderers;
 
 import com.guhao.api.RendersPlayerArms;
+import com.guhao.init.Effect;
+import com.guhao.init.ParticleType;
 import com.guhao.item.GUHAO;
 import com.guhao.item.model.GUHAOModel;
 import com.guhao.utils.AnimUtils;
@@ -10,20 +12,35 @@ import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.checkerframework.checker.units.qual.A;
+import software.bernie.example.registry.SoundRegistry;
+import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimatableModel;
+import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.ParticleKeyFrameEvent;
+import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
+import software.bernie.geckolib3.network.ISyncable;
 import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 
 import java.util.HashMap;
@@ -32,11 +49,12 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("deprecated")
-public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlayerArms {
+//壁虎立体阿尔法通道渐变变色呼吸灯式增添关键帧事件的mc事例判断的动态变换模型的动态模型和动态动画的动画搭配if判断的动态发光贴图联动efm的模型
+public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlayerArms, AnimationController.IParticleListener<GUHAO>, IAnimatable, ISyncable {
 	public GUHAORenderer() {
 		super(new GUHAOModel());
 	}
-
+	private static final String CONTROLLER_NAME = "GuHaoController";
 	@Override
 	public RenderType getRenderType(GUHAO animatable, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, VertexConsumer buffer, int packedLight, ResourceLocation texture) {
 		return RenderType.entityTranslucent(getTextureLocation(animatable));
@@ -44,9 +62,8 @@ public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlay
 
 	static {
 		AnimationController.addModelFetcher(animatable -> {
-			if (animatable instanceof GUHAO) {
-				Item item = (Item) animatable;
-				GeoItemRenderer<?> ister = new GUHAORenderer();
+			if (animatable instanceof GUHAO item) {
+                GeoItemRenderer<?> ister = new GUHAORenderer();
 				return (IAnimatableModel<Object>) ister.getGeoModelProvider();
 			}
 			return null;
@@ -72,8 +89,43 @@ public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlay
 	}
 
 	@Override
-	public void render(GeoModel model, GUHAO animatable, float partialTicks, RenderType type, PoseStack matrixStackIn, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red,
-					   float green, float blue, float alpha) {
+	public void render(GeoModel model, GUHAO animatable, float partialTicks, RenderType type, PoseStack matrixStackIn, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+		packedLightIn = 0xf000ff;
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		Minecraft mc = Minecraft.getInstance();
+		float sign = 1.0f;
+		this.aimProgress = Mth.clamp(this.aimProgress + mc.getFrameTime() * sign * 0.1f, 0.0f, 1.0f);
+		alpha = 112.5f;
+		float minAlpha = 24.0f; // 最小alpha值
+		float maxAlpha = 255.0f; // 最大alpha值
+		float minRed = 0.0f; // 最小Red值
+		float minGreen = 30.0f; //
+		float minBlue = 30.0f; //
+		float maxRed = 255.0f; // 最大Red值
+		float maxGreen = 255.0f; //
+		float maxBlue = 255.0f; //
+		float cycleTime = 10f; // 一个呼吸灯循环的速率
+		float time = mc.getFrameTime();
+		float progress = Mth.clamp(time % cycleTime / cycleTime, 0.0f, 1.0f);
+		//float progress = Mth.clamp((time % cycleTime) / cycleTime, 0.0f, 1.0f);
+		alpha = Mth.lerp(progress, minAlpha, maxAlpha);
+		/*
+		if (alpha >= maxAlpha-1) {
+			minAlpha = maxAlpha;
+			maxAlpha = minAlpha;
+		}
+		else if (alpha <= minAlpha+1) {
+			minAlpha = maxAlpha;
+			maxAlpha = minAlpha;
+		}
+		alpha = Mth.lerp(progress, minAlpha, maxAlpha);
+		 */
+		if (mc.player != null && mc.player.hasEffect(Effect.GUHAO.get())) {
+			//red = Mth.lerp(progress, minRed, maxRed);
+			green = Mth.lerp(progress, minGreen, maxGreen);
+			blue = Mth.lerp(progress, minBlue, maxBlue);
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////
 		this.currentBuffer = renderTypeBuffer;
 		this.renderType = type;
 		this.animatable = animatable;
@@ -81,8 +133,9 @@ public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlay
 		if (this.renderArms) {
 			this.renderArms = false;
 		}
+		if (this.animatable != null)
+			this.animatable.getTransformType(this.transformType);
 	}
-
 	@Override
 	public void render(GUHAO animatable, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn, ItemStack itemStack) {
 		Minecraft mc = Minecraft.getInstance();
@@ -200,5 +253,48 @@ public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlay
 	@Override
 	public boolean shouldAllowHandRender(ItemStack mainhand, ItemStack offhand, InteractionHand renderingHand) {
 		return renderingHand == InteractionHand.MAIN_HAND;
+	}
+
+	@Override
+	public void summonParticle(ParticleKeyFrameEvent particleKeyFrameEvent) {
+	}
+
+	@Override
+	public void registerControllers(AnimationData data) {
+		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 86, this::predicate);
+		controller.registerSoundListener(this::particleListener);
+		data.addAnimationController(controller);
+	}
+
+	private void particleListener(SoundKeyframeEvent soundKeyframeEvent) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.player != null && mc.player.getLevel() instanceof ServerLevel world){
+			world.sendParticles(ParticleType.TWO_EYE.get(), mc.player.getX(), mc.player.getY(), mc.player.getZ(), 1, 0.5, 0.5, 0.5, 0);
+		}
+	}
+
+	@Override
+	public AnimationFactory getFactory() {
+		return null;
+	}
+
+	@Override
+	public void onAnimationSync(int i, int i1) {
+
+	}
+	private <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+		return PlayState.CONTINUE;
+	}
+
+	private <ENTITY extends IAnimatable> void soundListener(SoundKeyframeEvent<ENTITY> event) {
+		// The animation for the JackInTheBoxItem has a sound keyframe at time 0:00.
+		// As soon as that keyframe gets hit this method fires and it starts playing the
+		// sound to the current player.
+		// The music is synced with the animation so the box opens as soon as the music
+		// plays the box opening sound
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player != null) {
+			player.playSound(SoundRegistry.JACK_MUSIC.get(), 1, 1);
+		}
 	}
 }

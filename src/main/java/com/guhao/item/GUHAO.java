@@ -1,12 +1,18 @@
 package com.guhao.item;
 
-import com.guhao.init.Tabs;
+import com.guhao.client.particle.text.ColorPutter;
+import com.guhao.client.particle.text.RainbowFont;
+import com.guhao.events.HitEvent;
 import com.guhao.renderers.GUHAORenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.jobin.stellariscraft.init.StellariscraftModTabs;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -22,29 +28,29 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
+import yesman.epicfight.world.item.WeaponItem;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class GUHAO extends SwordItem implements IAnimatable {
+public class GUHAO extends WeaponItem implements IAnimatable {
     public AnimationFactory factory = GeckoLibUtil.createFactory(this);
     public String animationprocedure = "empty";
     public static ItemTransforms.TransformType transformType;
 
     public GUHAO() {
         super(new Tier() {
-            public int getUses() {
-                return 0;
-            }
+
+            public int getUses() {return 100000;}
 
             public float getSpeed() {
                 return 9.0f;
             }
 
             public float getAttackDamageBonus() {
-                return 32f;
+                return 28f;
             }
 
             public int getLevel() {
@@ -52,15 +58,16 @@ public class GUHAO extends SwordItem implements IAnimatable {
             }
 
             public int getEnchantmentValue() {
-                return 15;
+                return 99;
             }
 
+            public @NotNull Ingredient getRepairIngredient() {return Ingredient.of(new ItemStack(Items.ENDER_EYE));}
 
-            public @NotNull Ingredient getRepairIngredient() {
-                return Ingredient.of();
-            }
-        }, 3, -1.9f,
-                new Item.Properties().tab(Tabs.TAB_GU_HAO_SAMA).fireResistant().rarity(Rarity.EPIC));
+              }, 3, -1.9f,
+                new Item.Properties().tab(
+                        //StellarisdlcModTabs.STELLARISDLC
+                        StellariscraftModTabs.TAB_STELLARIS_CRAFT
+                ).fireResistant().rarity(Rarity.EPIC));
     }
 
     @Override
@@ -117,6 +124,7 @@ public class GUHAO extends SwordItem implements IAnimatable {
     private <P extends Item & IAnimatable> PlayState idlePredicate(AnimationEvent<P> event) {
         if (transformType != null) {
             if (this.animationprocedure.equals("empty")) {
+                Minecraft mc =Minecraft.getInstance();
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("0", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
@@ -156,8 +164,22 @@ public class GUHAO extends SwordItem implements IAnimatable {
     @Override
     public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, world, list, flag);
-        list.add(new TextComponent("\u00A7k66666666666666666666666"));
-        list.add(new TextComponent("\u00A74feel r'luh ot GuHao_"));
-        list.add(new TextComponent("\u00A7k66666666666666666666666"));
+        list.add(new TextComponent("\u00A74\u00A7k6666666666guhao6666666666666"));
+        list.add(new TextComponent("\u00A7c消散于迷雾之中吧..."));
+        list.add(new TextComponent("<GuHao_>\u00A7clord ot bthnkor ng gn'th'bthnk"));
+        list.add(new TextComponent("\u00A7cfeel r'luh ot GuHao_"));
+        list.add(new TextComponent("\u00A74\u00A7k6666666666potato6666666666666"));
+        list.add(new TextComponent("\n"));
+        list.add(new TextComponent(ColorPutter.rainbow("\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7")));
+        list.add(new TextComponent("\n"));
+        list.add(new TextComponent(ColorPutter.rainbow2(I18n.get("skill.guhao.sacrifice.tooltip"))));
+        list.add(new TextComponent("\n"));
+    }
+
+    @Override
+    public boolean hurtEnemy(ItemStack itemstack, LivingEntity entity, LivingEntity sourceentity) {
+        boolean retval = super.hurtEnemy(itemstack, entity, sourceentity);
+        HitEvent.execute(entity.level, entity.getX(), entity.getY(), entity.getZ(), entity, sourceentity);
+        return retval;
     }
 }

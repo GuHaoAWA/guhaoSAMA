@@ -1,4 +1,10 @@
 {
-  "item.guhao.guhao": "§4GuHao_",
-  "itemGroup.gu_hao_sama": "§4GuHao_"
+  "item.guhao.guhao": "§4✡BLOODSEEKER✡",
+  "itemGroup.gu_hao_sama": "§4GuHao_",
+  "effect.guhao.guhao": "§4§kGUHAO",
+  "skill.guhao.sacrifice": "§4Sacrifice",
+  "skill.guhao.sacrifice.tooltip":"It has stored some of the power of the ancient gods...... \nInfinite Perfect Block \nPress the hotkey to throw ender pearls from the void (no cost) \nPressing the hotkey will cause entities in the vicinity of 30 blocks to burst with the Bleed buff \nOrdinary is to strengthen katana skills, \nPress down the CTRL key for the skill of closing the knife, \nCharge to 10 and then press the shift to sacrifice yourself to the god to gain some of the god's power. \nSacrifice: At the moment of sacrifice, all physical strength is consumed, and at the same time, the maximum stamina of the monster within 30 blocks of the self is reduced by half, the stamina recovery speed is reduced by half, the armor is 0, the toughness is 0, and at the same time, you get part of the god's power for a moment.\nGod's power (fragments): You get the circle ring under your feet as a reference, when attacking entities, all entities in the circle will receive real damage, how many entities are attacked together and how much blood you recover, and any of your attacks become triple damage, those with pillars of light are true damage, and 0.25 times the damage that will be caused by blocking additional counter-damage enemies, \nBlood Judgment: While the effect of the sacrifice lasts, accumulate another 10 stacks of skills and release them by pressing shift. \nIt's been a long time......",
+  "key.guhao.ender": "Ender",
+  "key.categories.guhao": "GuHao_",
+  "key.guhao.blood_burst": "Blood Burst"
 }

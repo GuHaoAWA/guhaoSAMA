@@ -6,24 +6,31 @@ import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
+import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 
 import static com.guhao.Guhao.MODID;
 
 @Mod.EventBusSubscriber(modid = MODID, bus= Mod.EventBusSubscriber.Bus.FORGE)
 public class GuHaoSkills {
-    public static Skill GUHAOPASSIVE;
 
+    public static Skill SACRIFICE;
+    public static Skill GUHAO_PASSIVE;
     public GuHaoSkills() {
     }
 
     public static void registerSkills() {
-        SkillManager.register(GUHAOPASSIVE::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setActivateType(Skill.ActivateType.ONE_SHOT).setResource(Skill.Resource.COOLDOWN), MODID, "guhaopassive");
+        SkillManager.register(SacrificeSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(Skill.ActivateType.ONE_SHOT), "guhao", "sacrifice");
+        SkillManager.register(GuHaoPassive::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setActivateType(Skill.ActivateType.DURATION_INFINITE).setResource(Skill.Resource.COOLDOWN),MODID, "guhao_passive");
     }
 
     @SubscribeEvent
-    public static void buildSkillEvent(SkillBuildEvent onBuild) {
+    public static void buildSkillEvent(SkillBuildEvent event) {
 
-        GUHAOPASSIVE = onBuild.build(MODID, "guhaopassive");
+        WeaponInnateSkill sacrifice = event.build(MODID, "sacrifice");
+        Skill guhao_passive = event.build(MODID, "guhao_passive");
+
+        SACRIFICE = sacrifice;
+        GUHAO_PASSIVE = guhao_passive;
 
 
     }
