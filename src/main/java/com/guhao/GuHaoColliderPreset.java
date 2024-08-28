@@ -16,6 +16,9 @@ public class GuHaoColliderPreset {
     public static final Collider SACRIFICE_ATTACK = new MultiOBBCollider(6, 0.64, 0.64, 1.983, 0.0, 0.0, -1.38);
     public static final Collider GUHAO = new MultiOBBCollider(4, 0.2, 0.2, 1.883, 0.0, 0.0, -1.28);
     public static final Collider ENDER_LASER = new MultiOBBCollider(10, 0.32, 0.32, 20.5, 0.0, 0.0, -20.2);
+    public static final Collider BIGSTAR = new MultiOBBCollider(6, 10, 10, 10, 0.0, 0.0, 0.0);
+    public static final Collider CUT_IN = new OBBCollider(2.0D, 0.25D, 1.5D, 0D, 0.5D, -1.0D);
+
     public GuHaoColliderPreset() {
     }
 }

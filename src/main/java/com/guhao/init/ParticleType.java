@@ -38,7 +38,7 @@ public class ParticleType {
         PE.register(TWO_EYE.get(), TwoEyeParticle.EyeParticleProvider::new);
         PE.register(RING.get(), RingParticle.RingParticleProvider::new);
         PE.register(RED_RING.get(), RedRingParticle.RedRingParticleProvider::new);
-        PE.register(BLOOD_FIRE_FLAME.get(), BloodFireParticle.BloodFireParticleProvider::new);
+        PE.register(BLOOD_FIRE_FLAME.get(), BloodFireParticle.SmallFlameProvider::new);
         PE.register(BLOOD_JUDGEMENT.get(), BloodJudgementParticle.Provider::new);
         PE.register(ONE_JC_BLOOD_JUDGEMENT.get(), ONEJCBladeTrail.Provider::new);
         PE.register(ENTITY_AFTER_IMG_BLOOD.get(), After_Image_BloodParticle.Provider::new);

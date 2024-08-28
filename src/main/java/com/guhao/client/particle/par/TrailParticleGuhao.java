@@ -60,8 +60,6 @@ public class TrailParticleGuhao extends TextureSheetParticle {
 
     protected TrailParticleGuhao(ClientLevel level, LivingEntityPatch<?> entitypatch, Joint joint, StaticAnimation animation, TrailInfo trailInfo, SpriteSet spriteSet) {
         super(level, 0, 0, 0);
-
-        this.alpha = 112.5f;
         this.joint = joint;
         this.entitypatch = entitypatch;
         this.animation = animation;

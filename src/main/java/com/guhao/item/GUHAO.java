@@ -1,7 +1,6 @@
 package com.guhao.item;
 
 import com.guhao.client.particle.text.ColorPutter;
-import com.guhao.client.particle.text.RainbowFont;
 import com.guhao.events.HitEvent;
 import com.guhao.renderers.GUHAORenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -38,6 +37,7 @@ import java.util.stream.Collectors;
 public class GUHAO extends WeaponItem implements IAnimatable {
     public AnimationFactory factory = GeckoLibUtil.createFactory(this);
     public String animationprocedure = "empty";
+    public static boolean timeStop = false;
     public static ItemTransforms.TransformType transformType;
 
     public GUHAO() {
@@ -50,7 +50,7 @@ public class GUHAO extends WeaponItem implements IAnimatable {
             }
 
             public float getAttackDamageBonus() {
-                return 28f;
+                return 14f;
             }
 
             public int getLevel() {
@@ -69,6 +69,32 @@ public class GUHAO extends WeaponItem implements IAnimatable {
                         StellariscraftModTabs.TAB_STELLARIS_CRAFT
                 ).fireResistant().rarity(Rarity.EPIC));
     }
+
+//    @Override
+//    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player entity, @NotNull InteractionHand hand) {
+//        InteractionResultHolder<ItemStack> ar = super.use(world, entity, hand);
+//        if (Screen.hasShiftDown()) {
+//            timeStop = false;
+//            try {
+//                Field field = Minecraft.class.getDeclaredField("pause");
+//                field.setAccessible(true);
+//                field.set(Minecraft.getInstance(), false);
+//            } catch (NoSuchFieldException | IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+//        } else {
+//            timeStop = true;
+//            try {
+//                Field field = Minecraft.class.getDeclaredField("pause");
+//                field.setAccessible(true);
+//                field.set(Minecraft.getInstance(), true);
+//            } catch (NoSuchFieldException | IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        return ar;
+//    }
+
 
     @Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
@@ -172,7 +198,9 @@ public class GUHAO extends WeaponItem implements IAnimatable {
         list.add(new TextComponent("\n"));
         list.add(new TextComponent(ColorPutter.rainbow("\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7\u00A7")));
         list.add(new TextComponent("\n"));
-        list.add(new TextComponent(ColorPutter.rainbow2(I18n.get("skill.guhao.sacrifice.tooltip"))));
+        list.add(new TextComponent("\u00A74请查看jei"));
+        list.add(new TextComponent("\n"));
+        list.add(new TextComponent(ColorPutter.rainbow4(I18n.get("word.explain2"))));
         list.add(new TextComponent("\n"));
     }
 

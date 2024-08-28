@@ -68,7 +68,7 @@ public class HitEvent {
                                     _level.sendParticles(ParticleType.TWO_EYE.get(), entityiterator.getX(), entityiterator.getY()+1, entityiterator.getZ(), 1, 0.5, 0.5, 0.5, 0);
                                 }
                                 player1.setHealth(player1.getHealth() + 1.0F);
-                                entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(entity, -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 25);
+                                entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(entity, -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 4.5F);
 
                             }
                         }
@@ -94,7 +94,7 @@ public class HitEvent {
                         }
 
                         private void run() {
-                            entity.hurt(DamageSource.playerAttack(world.getNearestPlayer(entity, -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 15);
+                            entity.hurt(DamageSource.playerAttack(world.getNearestPlayer(entity, -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 7.5F);
                             if (world instanceof ServerLevel _level) {
                                 Random r = new Random();
                                 _level.sendParticles(ParticleType.ONE_JC_BLOOD_JUDGEMENT.get(), x, y, z, 1, 0.15, 0, 0.15, 0);
@@ -127,7 +127,7 @@ public class HitEvent {
                                         _level.sendParticles(ParticleType.ONE_JC_BLOOD_JUDGEMENT.get(), x, y, z, 1, 0.15, 0, 0.15, 0);
                                         _level.playSound(null, new BlockPos(x, y, z), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BIU.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.75f,1.25f));
                                     }
-                                    entity.hurt(DamageSource.playerAttack(world.getNearestPlayer(entity, -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 15);
+                                    entity.hurt(DamageSource.playerAttack(world.getNearestPlayer(entity, -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 7.5F);
                                     MinecraftForge.EVENT_BUS.unregister(this);
                                 }
                             }.start(world, 10);

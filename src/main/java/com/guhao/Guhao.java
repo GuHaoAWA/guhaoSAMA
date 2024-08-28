@@ -1,16 +1,20 @@
 package com.guhao;
 
+import com.dfdyz.epicacg.network.Netmgr;
 import com.guhao.capability.GuHaoCapability;
-import com.guhao.events.RingEvent;
 import com.guhao.init.*;
 import com.guhao.skills.GuHaoSkills;
+import com.guhao.star.efmex.IntegrationHandler;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
@@ -41,6 +45,7 @@ public class Guhao {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         GuHaoSkills.registerSkills();
         Entities.REGISTRY.register(bus);
+        bus.addListener(this::setupClient);
         bus.addListener(PostEffects::register);
         bus.addListener(GuHaoCapability::register);
         bus.addListener(GuHaoAnimations::registerAnimations);
@@ -55,6 +60,18 @@ public class Guhao {
     public static <T> void addNetworkMessage(Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {
         PACKET_HANDLER.registerMessage(messageID, messageType, encoder, decoder, messageConsumer);
         messageID++;
+    }
+    private void setupClient(final FMLClientSetupEvent event){
+        GuHaoAnimations.LoadCamAnims();
+    }
+    @SubscribeEvent
+    public static void modConstruction(FMLConstructModEvent event) {
+        IntegrationHandler.construct();
+    }
+    @SubscribeEvent
+    public void setupCommon(FMLCommonSetupEvent event) {
+        event.enqueueWork(Netmgr::register);
+        GuHaoSkills.registerSkills();
     }
 }
 

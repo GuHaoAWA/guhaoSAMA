@@ -51,7 +51,6 @@ public class GuHaoSpecialAttackAnimation extends GuHaoBasicMultipleAttackAnimati
     public GuHaoSpecialAttackAnimation(float convertTime, String path, Armature armature, AttackAnimation.Phase... phases) {
         super(convertTime, path, armature, phases);
         this.newTimePair(0.0F, Float.MAX_VALUE);
-        this.addStateRemoveOld(EntityState.TURNING_LOCKED, false);
         this.addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOC_TARGET);
         this.addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, (self, entitypatch, transformSheet) -> {
             LivingEntity attackTarget = entitypatch.getTarget();

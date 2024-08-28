@@ -4,23 +4,26 @@ import com.dfdyz.epicacg.client.screeneffect.ColorDispersionEffect;
 import com.guhao.init.Effect;
 import com.guhao.init.ParticleType;
 import com.guhao.init.Sounds;
-import io.redspace.ironsspellbooks.capabilities.magic.PlayerMagicData;
 import io.redspace.ironsspellbooks.entity.spells.blood_needle.BloodNeedle;
 import io.redspace.ironsspellbooks.entity.spells.blood_slash.BloodSlashProjectile;
 import io.redspace.ironsspellbooks.registries.SoundRegistry;
 import io.redspace.ironsspellbooks.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -29,6 +32,7 @@ import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.HurtableEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.effect.EpicFightMobEffects;
@@ -63,12 +67,14 @@ public class BattleUtils {
             projectileLevel.addFreshEntity(_entityToSpawn);
         }
         public static void blood_needles(LivingEntityPatch<?> ep) {
-                ep.playSound(SoundRegistry.BLOOD_CAST.get(), 1.0F, 1.0F);
+
+
+            ep.playSound(SoundRegistry.BLOOD_CAST.get(), 1.0F, 1.0F);
                 Random random = new Random();
                 Level world = ep.getOriginal().level;
                 LivingEntity entity = ep.getOriginal();
                 int count = 10;
-                float damage = random.nextFloat(10f, 20f);
+                float damage = random.nextFloat(5f, 10f);
                 int degreesPerNeedle = 360 / count;
                 var raycast = Utils.raycastForEntity(world, entity, 32, true);
                 for (int i = 0; i < count; i++) {
@@ -89,8 +95,14 @@ public class BattleUtils {
             LivingEntity entity =ep.getOriginal();
             BloodSlashProjectile bloodSlash = new BloodSlashProjectile(world, entity);
             bloodSlash.setPos(entity.getEyePosition());
-            bloodSlash.shoot(entity.getLookAngle());
-            bloodSlash.setDamage(random.nextFloat(25f,45f));
+            bloodSlash.shoot(new Vec3(entity.getLookAngle().x(),entity.getLookAngle().y(),entity.getLookAngle().z()));
+//            Vec3 look = entity.getLookAngle();
+//            double x = look.x;
+//            double z = look.z;
+//            double y = look.y;
+//            bloodSlash.setDeltaMovement(x * 1.0, y * 1.0, z * 1.0);
+            bloodSlash.setDamage(random.nextFloat(10f,15f));
+
             world.addFreshEntity(bloodSlash);
         }
         public static void sacrifice(LivingEntityPatch<?> livingEntityPatch){
@@ -167,12 +179,15 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3((x + 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(),-1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 30);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(),-1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
+                    HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
                     if (entitypatch != null) {
                         entitypatch.cancelAnyAction();
-                        entitypatch.applyStun(StunType.HOLD,1.5F);
+                        if (hurtableEntityPatch != null) {
+                            hurtableEntityPatch.applyStun(StunType.HOLD,1.5F);
+                        }
                     }
                 }
             }
@@ -180,12 +195,15 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3((x - 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 30);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
+                    HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
                     if (entitypatch != null) {
                         entitypatch.cancelAnyAction();
-                        entitypatch.applyStun(StunType.HOLD,1.5F);
+                        if (hurtableEntityPatch != null) {
+                            hurtableEntityPatch.applyStun(StunType.HOLD,1.5F);
+                        }
                     }
                 }
             }
@@ -193,12 +211,15 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3(x, y, z+4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 30);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
+                    HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
                     if (entitypatch != null) {
                         entitypatch.cancelAnyAction();
-                        entitypatch.applyStun(StunType.HOLD,1.5F);
+                        if (hurtableEntityPatch != null) {
+                            hurtableEntityPatch.applyStun(StunType.HOLD,1.5F);
+                        }
                     }
                 }
             }
@@ -206,12 +227,15 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3(x, y, z-4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 30);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
+                    HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
                     if (entitypatch != null) {
                         entitypatch.cancelAnyAction();
-                        entitypatch.applyStun(StunType.HOLD,1.5F);
+                        if (hurtableEntityPatch != null) {
+                            hurtableEntityPatch.applyStun(StunType.HOLD,1.5F);
+                        }
                     }
                 }
             }
@@ -253,7 +277,7 @@ public class BattleUtils {
                         return;
                     }
 
-                    LivingEntityPatch<?> lep = EpicFightCapabilities.getEntityPatch(le, LivingEntityPatch.class);
+                    HurtableEntityPatch<?> lep = EpicFightCapabilities.getEntityPatch(le, HurtableEntityPatch.class);
                     if (lep == null) {
                         return;
                     }
@@ -272,7 +296,7 @@ public class BattleUtils {
             Level world = ep.getOriginal().level;
             {
                 final Vec3 _center = new Vec3(x, y, z);
-                List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(60 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
+                List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(60.0 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
                     if (entityiterator instanceof LivingEntity livingEntity && livingEntity.hasEffect(new MobEffectInstance(EXSANGUINATION).getEffect()) && !(livingEntity instanceof Player)) {
                         int amplifier = livingEntity.getEffect(new MobEffectInstance(EXSANGUINATION).getEffect()).getAmplifier();
@@ -281,11 +305,12 @@ public class BattleUtils {
                             _level.playSound(null, new BlockPos(entityiterator.getX(), entityiterator.getY(), entityiterator.getZ()), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BLOOD.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.75f,1.25f));
                             _level.sendParticles(EpicFightParticles.EVISCERATE.get(), livingEntity.getX(), livingEntity.getY() + 1, livingEntity.getZ(), amplifier, 0.5, 0.5, 0.5, 0);
                         }
-                        livingEntity.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier*15.0F);
+                        livingEntity.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier * 2.0F);
                         livingEntity.removeEffect(EXSANGUINATION);
-                        LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
-                        if (entitypatch != null) {
-                            entitypatch.applyStun(StunType.LONG, 3.0F);
+                        //LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
+                        HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
+                        if (hurtableEntityPatch != null) {
+                            hurtableEntityPatch.applyStun(StunType.LONG, 4.0F);
                         }
                     }
                 }
@@ -302,30 +327,62 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3((x + 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 42, 0, false, true));
+                    if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 50, 0, false, true));
                 }
             }
             {
                 final Vec3 _center = new Vec3((x - 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 42, 0, false, true));
+                    if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 50, 0, false, true));
                 }
             }
             {
                 final Vec3 _center = new Vec3(x, y, z+4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 42, 0, false, true));
+                    if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 50, 0, false, true));
                 }
             }
             {
                 final Vec3 _center = new Vec3(x, y, z-4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                        if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 42, 0, false, true));
+                        if (entityiterator instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(com.guhao.star.regirster.Effect.EXECUTED.get()).getEffect(), 50, 0, false, true));
                     }
                 }
             }
+
+        public static void explosion(LivingEntityPatch<?> ep) {
+            if (ep.getOriginal().getLevel() instanceof ServerLevel _level) {
+                _level.sendParticles(ParticleTypes.FLAME, ep.getOriginal().getX(), ep.getOriginal().getY(), ep.getOriginal().getZ(), 10, 2, 2, 2, 0.2);
+                _level.sendParticles(ParticleTypes.EXPLOSION, ep.getOriginal().getX(), ep.getOriginal().getY(), ep.getOriginal().getZ(), 1, 0, 0, 0, 0);
+            }
+        }
+
+        public static void explosion2(LivingEntityPatch<?> ep) {
+            epExplosion(ep,0,0,0);
+//            epExplosion(ep,4,0,0);
+//            epExplosion(ep,8,0,0);
+//            epExplosion(ep,0,0,4);
+//            epExplosion(ep,0,0,8);
+//            epExplosion(ep,0,0,-4);
+//            epExplosion(ep,0,0,-8);
+//            epExplosion(ep,-4,0,0);
+//            epExplosion(ep,-8,0,0);
+//            epExplosion(ep,4,0,4);
+//            epExplosion(ep,4,0,-4);
+//            epExplosion(ep,-4,0,4);
+//            epExplosion(ep,-4,0,-4);
+        }
+        public static void epExplosion(LivingEntityPatch<?> ep, double xo, double yo, double zo) {
+            ep.getOriginal().getLevel().explode(ep.getOriginal(), ep.getOriginal().getX() + xo, ep.getOriginal().getY() + yo, ep.getOriginal().getZ() + zo, 16, true, Explosion.BlockInteraction.BREAK);
+        }
+
+        public static void explosionEffect(LivingEntityPatch<?> ep) {
+            ep.getOriginal().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE,220,36,false,false));
+        }
+
+
     }
 }

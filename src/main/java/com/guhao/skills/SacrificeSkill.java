@@ -1,41 +1,64 @@
 package com.guhao.skills;
 
+import com.google.common.collect.Maps;
 import com.guhao.GuHaoAnimations;
 import com.guhao.init.Effect;
+import com.guhao.init.Key;
 import com.nameless.falchion.gameasset.FalchionAnimations;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.Input;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import reascer.wom.gameasset.WOMAnimations;
+import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.client.events.engine.ControllEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.network.client.CPExecuteSkill;
-import yesman.epicfight.skill.BattojutsuPassive;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class SacrificeSkill extends WeaponInnateSkill {
     private final Minecraft mc = Minecraft.getInstance();
     private final StaticAnimation[] animations;
+    public final Map<StaticAnimation, AttackAnimation> comboAnimation = Maps.newHashMap();
     private static final UUID EVENT_UUID = UUID.fromString("d706b5bc-b98b-cc49-b83e-16ae590db349");
+    private boolean isShiftDown;
+    private boolean isCtrlDown;
 
     public SacrificeSkill(Skill.Builder<? extends Skill> builder) {
         super(builder);
         this.animations = new StaticAnimation[]{FalchionAnimations.FALCHION_FORWARD, FalchionAnimations.FALCHION_BACKWARD, FalchionAnimations.FALCHION_SIDE};
-    }
+        this.comboAnimation.put(Animations.TACHI_AUTO3, (AttackAnimation) Animations.RUSHING_TEMPO3);
+        this.comboAnimation.put(Animations.UCHIGATANA_AUTO1, (AttackAnimation) Animations.RUSHING_TEMPO1);
+        this.comboAnimation.put(Animations.UCHIGATANA_AUTO3, (AttackAnimation) Animations.RUSHING_TEMPO2);
+        this.comboAnimation.put(Animations.LONGSWORD_AUTO2, (AttackAnimation) WOMAnimations.RUINE_AUTO_1);
+        this.comboAnimation.put(GuHaoAnimations.GUHAO_BIU, (AttackAnimation) GuHaoAnimations.BIU);
+        this.comboAnimation.put(GuHaoAnimations.GUHAO_DASH, (AttackAnimation) GuHaoAnimations.DENG_LONG);
 
+        this.comboAnimation.put(Animations.RUSHING_TEMPO3, (AttackAnimation) Animations.REVELATION_TWOHAND);
+        this.comboAnimation.put(Animations.RUSHING_TEMPO1, (AttackAnimation) Animations.REVELATION_TWOHAND);
+        this.comboAnimation.put(Animations.RUSHING_TEMPO2, (AttackAnimation) Animations.REVELATION_TWOHAND);
+        this.comboAnimation.put(WOMAnimations.RUINE_AUTO_1, (AttackAnimation) Animations.REVELATION_TWOHAND);
+        this.comboAnimation.put(GuHaoAnimations.BIU, (AttackAnimation) Animations.REVELATION_TWOHAND);
+        this.comboAnimation.put(WOMAnimations.KATANA_AUTO_3, (AttackAnimation) Animations.REVELATION_TWOHAND);
+
+        this.comboAnimation.put(Animations.REVELATION_TWOHAND, (AttackAnimation) GuHaoAnimations.GUHAO_UCHIGATANA_SCRAP);
+    }
+    @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_POST, EVENT_UUID, (event) -> {
@@ -45,17 +68,19 @@ public class SacrificeSkill extends WeaponInnateSkill {
                 event.getDamageSource().setStunType(StunType.NONE);
             }
         });
-    }
 
+    }
+    @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_POST, EVENT_UUID);
     }
-
+    @Override
     public WeaponInnateSkill registerPropertiesToAnimation() {
+        this.comboAnimation.values().forEach((animation) -> animation.phases[0].addProperties(this.properties.get(0).entrySet()));
         return this;
     }
-
+    @Override
     @OnlyIn(Dist.CLIENT)
     public FriendlyByteBuf gatherArguments(LocalPlayerPatch executer, ControllEngine controllEngine) {
         Input input = executer.getOriginal().input;
@@ -72,6 +97,7 @@ public class SacrificeSkill extends WeaponInnateSkill {
         return buf;
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public Object getExecutionPacket(LocalPlayerPatch executer, FriendlyByteBuf args) {
         int forward = args.readInt();
@@ -97,30 +123,63 @@ public class SacrificeSkill extends WeaponInnateSkill {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
+    public void executeOnClient(LocalPlayerPatch executer, FriendlyByteBuf args) {
+        isShiftDown = Key.SHIFT.isDown();
+        isCtrlDown = Key.CTRL.isDown();
+    }
+//    @OnlyIn(Dist.CLIENT)
+//    @Override
+//    public boolean shouldDraw(SkillContainer container) {
+//        PlayerPatch<?> executer = container.getExecuter();
+//        EntityState playerState = executer.getEntityState();
+//        return this.comboAnimation.containsKey(executer.getAnimator().getPlayerFor(null).getAnimation().getRegistryName()) && playerState.canUseSkill() && playerState.inaction();
+//    }
+//    @OnlyIn(Dist.CLIENT)
+//    @Override
+//    public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
+//        poseStack.pushPose();
+//        poseStack.translate(0.0, (float)gui.getSlidingProgression(), 0.0);
+//        ResourceLocation name = this.getRegistryName();
+//        RenderSystem.setShaderTexture(0, new ResourceLocation(name.getNamespace(), "textures/gui/skills/guhao_passive.png"));
+//        GuiComponent.blit(poseStack, (int)x, (int)y, 24, 24, 0, 0, 1, 1, 1, 1);
+//        poseStack.popPose();
+//    }
+
+    @Override
     public void executeOnServer(ServerPlayerPatch executer, FriendlyByteBuf args) {
+        LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+        boolean isSheathed = executer.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(GuHaoPassive.SHEATH);
+        this.executeOnClient(lpp,args);
         while (true) {
-            boolean isSheathed = executer.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(GuHaoPassive.SHEATH);
-            if (mc.options.keyShift.isDown() && (executer.getSkill(GuHaoSkills.SACRIFICE).getStack() >= 10)) {
+            if (this.comboAnimation.containsKey(executer.getAnimator().getPlayerFor(null).getAnimation())) {
+                executer.playAnimationSynchronized(this.comboAnimation.get(executer.getAnimator().getPlayerFor(null).getAnimation()), 0.0F);
+                super.executeOnServer(executer, args);
+                break;
+            }
+            if (isShiftDown && (executer.getSkill(GuHaoSkills.SACRIFICE).getStack() >= 10)) {
                 if (executer.getOriginal().hasEffect(Effect.GUHAO.get())) {
                     if (isSheathed) {
                         executer.playAnimationSynchronized(GuHaoAnimations.BLOOD_JUDGEMENT, -0.196F);
                         executer.getSkill(GuHaoSkills.SACRIFICE).setStack(6);
                         executer.setStamina(executer.getStamina() * 0.65F);
+                        super.executeOnServer(executer, args);
                     } else {
                         executer.playAnimationSynchronized(GuHaoAnimations.BLOOD_JUDGEMENT, 0.0F);
                         executer.getSkill(GuHaoSkills.SACRIFICE).setStack(5);
                         executer.setStamina(executer.getStamina() * 0.5F);
+                        super.executeOnServer(executer, args);
                     }
                 } else {
-                executer.playAnimationSynchronized(GuHaoAnimations.SACRIFICE, 0.0F);
-                executer.getSkill(GuHaoSkills.SACRIFICE).setStack(0);
-                executer.setStamina(0F);
+                    executer.playAnimationSynchronized(GuHaoAnimations.SACRIFICE, 0.0F);
+                    executer.getSkill(GuHaoSkills.SACRIFICE).setStack(0);
+                    executer.setStamina(0F);
+                    super.executeOnServer(executer, args);
                 }
-                super.executeOnServer(executer, args);
                 break;
             }
 ///////////////////////////////////////////////////////////////////////////
-            if (mc.options.keySprint.isDown()) {
+            if (isCtrlDown) {
                 int i = args.readInt();
                 executer.playAnimationSynchronized(this.animations[i], 0.0F);
                 super.executeOnServer(executer, args);
@@ -129,10 +188,11 @@ public class SacrificeSkill extends WeaponInnateSkill {
 ///////////////////////////////////////////////////////////////////////////
             if (isSheathed) {
                 executer.playAnimationSynchronized(GuHaoAnimations.GUHAO_BATTOJUTSU_DASH, -0.694F);
+                super.executeOnServer(executer, args);
             } else {
                 executer.playAnimationSynchronized(GuHaoAnimations.GUHAO_BATTOJUTSU_DASH, 0.0F);
+                super.executeOnServer(executer, args);
             }
-            super.executeOnServer(executer, args);
             break;
         }
     }

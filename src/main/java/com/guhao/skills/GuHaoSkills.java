@@ -19,8 +19,8 @@ public class GuHaoSkills {
     }
 
     public static void registerSkills() {
-        SkillManager.register(SacrificeSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(Skill.ActivateType.ONE_SHOT), "guhao", "sacrifice");
-        SkillManager.register(GuHaoPassive::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setActivateType(Skill.ActivateType.DURATION_INFINITE).setResource(Skill.Resource.COOLDOWN),MODID, "guhao_passive");
+        SkillManager.register(SacrificeSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), "guhao", "sacrifice");
+        SkillManager.register(GuHaoPassive::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setActivateType(Skill.ActivateType.DURATION).setResource(Skill.Resource.COOLDOWN),MODID, "guhao_passive");
     }
 
     @SubscribeEvent
@@ -31,7 +31,6 @@ public class GuHaoSkills {
 
         SACRIFICE = sacrifice;
         GUHAO_PASSIVE = guhao_passive;
-
 
     }
 }
