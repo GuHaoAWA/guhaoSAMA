@@ -28,20 +28,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import yesman.epicfight.api.animation.types.DodgeAnimation;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.HurtableEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.effect.EpicFightMobEffects;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
+import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.github.alexthe666.alexsmobs.effect.AMEffectRegistry.EXSANGUINATION;
 
@@ -101,8 +101,7 @@ public class BattleUtils {
 //            double z = look.z;
 //            double y = look.y;
 //            bloodSlash.setDeltaMovement(x * 1.0, y * 1.0, z * 1.0);
-            bloodSlash.setDamage(random.nextFloat(10f,15f));
-
+            bloodSlash.setDamage(random.nextFloat(15f,22f));
             world.addFreshEntity(bloodSlash);
         }
         public static void sacrifice(LivingEntityPatch<?> livingEntityPatch){
@@ -305,7 +304,7 @@ public class BattleUtils {
                             _level.playSound(null, new BlockPos(entityiterator.getX(), entityiterator.getY(), entityiterator.getZ()), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BLOOD.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.75f,1.25f));
                             _level.sendParticles(EpicFightParticles.EVISCERATE.get(), livingEntity.getX(), livingEntity.getY() + 1, livingEntity.getZ(), amplifier, 0.5, 0.5, 0.5, 0);
                         }
-                        livingEntity.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier * 2.0F);
+                        livingEntity.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier * 2.5F);
                         livingEntity.removeEffect(EXSANGUINATION);
                         //LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                         HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -384,5 +383,11 @@ public class BattleUtils {
         }
 
 
+        public static void dodge(LivingEntityPatch<?> ep) {
+            PlayerPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(ep.getOriginal(), PlayerPatch.class);
+            if (entitypatch != null) {
+                entitypatch.getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f6f"));
+            }
+        }
     }
 }

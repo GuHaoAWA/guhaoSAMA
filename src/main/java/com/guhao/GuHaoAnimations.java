@@ -1,25 +1,30 @@
 package com.guhao;
 
 
+import cc.xypp.damage_number.network.DamagePackage;
+import cc.xypp.damage_number.network.Network;
 import com.dfdyz.epicacg.client.camera.CameraAnimation;
 import com.dfdyz.epicacg.efmextra.anims.BasicAttackAnimationEx;
-import com.dfdyz.epicacg.efmextra.skills.SAO.skillevents.SAOSkillAnimUtils;
-import com.dfdyz.epicacg.efmextra.weapon.WeaponCollider;
-import com.dfdyz.epicacg.registry.Particles;
-import com.dfdyz.epicacg.registry.Sounds;
 import com.dfdyz.epicacg.utils.MoveCoordFuncUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.guhao.api.GuHaoSpecialAttackAnimation;
+import com.guhao.effects.WuDiEffect;
+import com.guhao.init.Effect;
 import com.guhao.init.ParticleType;
+import com.guhao.ranksystem.ServerEventExtra;
 import com.guhao.skills.GuHaoPassive;
 import com.guhao.skills.GuHaoSkills;
+import com.guhao.star.regirster.Sounds;
 import com.guhao.utils.BattleUtils;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +32,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.PacketDistributor;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
@@ -34,8 +40,8 @@ import yesman.epicfight.api.animation.property.MoveCoordFunctions;
 import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.api.client.animation.property.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.property.TrailInfo;
-import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
+import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.TimePairList;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
@@ -44,22 +50,20 @@ import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.model.armature.HumanoidArmature;
-import yesman.epicfight.network.EpicFightNetworkManager;
-import yesman.epicfight.network.server.SPPlayAnimation;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
-import yesman.epicfight.world.capabilities.entitypatch.HurtableEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.damagesource.StunType;
+import yesman.epicfight.world.effect.EpicFightMobEffects;
+import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static com.guhao.GuHaoColliderPreset.BIG_ATTACK;
 import static com.guhao.Guhao.MODID;
+import static com.guhao.ranksystem.ServerEventExtra.*;
 
 @OnlyIn(Dist.CLIENT)
 public class GuHaoAnimations {
@@ -93,6 +97,7 @@ public class GuHaoAnimations {
     public static StaticAnimation BIG_STAR;
     public static StaticAnimation DENG_LONG;
     public static StaticAnimation GUHAO_UCHIGATANA_SCRAP;
+    public static StaticAnimation JIANQIE;
 
     private static void register() {
         HumanoidArmature biped = Armatures.BIPED;
@@ -283,14 +288,14 @@ public class GuHaoAnimations {
                     entitypatch.getOriginal().level.addParticle(ParticleType.GUHAO_LASER.get(), (double) transformMatrix.m30 + entitypatch.getOriginal().getX(), (double) transformMatrix.m31 + entitypatch.getOriginal().getEyeY()-1.12, (double) transformMatrix.m32 + ((LivingEntity) entitypatch.getOriginal()).getZ(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z);
                 }, AnimationEvent.Side.CLIENT));
 
-        BLOOD_JUDGEMENT = (new GuHaoSpecialAttackAnimation(0.01F, "biped/blood_judgement", biped,
+        BLOOD_JUDGEMENT = (new GuHaoSpecialAttackAnimation(0.1F, "biped/blood_judgement", biped,
                 new GuHaoSpecialAttackAnimation.Phase(0.0F, 0.3F, 0.52F, Float.MAX_VALUE, 1.20f, biped.toolR, GuHaoColliderPreset.SACRIFICE_ATTACK)
                         .addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(20.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.5F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.adder(4.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG),
-                new GuHaoSpecialAttackAnimation.Phase(1.20000001f, 2.94F, 3.154F, Float.MAX_VALUE, Float.MAX_VALUE, biped.rootJoint, GuHaoColliderPreset.GUHAO_BATTOJUTSU_DASH)
+                new GuHaoSpecialAttackAnimation.Phase(1.20000001f, 2.93F, 3.154F, Float.MAX_VALUE, Float.MAX_VALUE, biped.rootJoint, GuHaoColliderPreset.GUHAO_BATTOJUTSU_DASH)
                         .addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(100.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.56F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.adder(3.6F))
@@ -357,39 +362,39 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, BIGSTAR)
                 .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(9F, 10.6F, 100, biped.toolR, InteractionHand.MAIN_HAND)));
         DENG_LONG = (new BasicAttackAnimationEx(0.1F, "biped/deng_long", biped,
-                new AttackAnimation.Phase(0.0F, 1.0F, 1.27F, 1.27001F, 1.27001F, biped.toolR, null)
+                new AttackAnimation.Phase(0.0F, 1.0F, 1.27F, 1.27002F, 1.27002F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.2701F, 1.2072F, 1.28F, 1.28001F, 1.28001F, biped.toolR, null)
+//                new AttackAnimation.Phase(1.2701F, 1.2072F, 1.28F, 1.28001F, 1.28001F, biped.toolR, null)
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
+                new AttackAnimation.Phase(1.272F, 1.272F, 1.295F, 1.295F, 1.296F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.2801F, 1.2802F, 1.29F, 1.29001F, 1.29001F, biped.toolR, null)
+//                new AttackAnimation.Phase(1.2901F, 1.2902F, 1.30F, 1.30001F, 1.30001F, biped.toolR, null)
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
+                new AttackAnimation.Phase(1.30F, 1.301F, 1.32F, 1.32F, 1.32F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.2901F, 1.2902F, 1.30F, 1.30001F, 1.30001F, biped.toolR, null)
+//                new AttackAnimation.Phase(1.3101F, 1.3102F, 1.32F, 1.32001F, 1.32001F, biped.toolR, null)
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
+                new AttackAnimation.Phase(1.3201F, 1.3201F, 1.34F, 1.34F, 1.34F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.3001F, 1.3002F, 1.31F, 1.31001F, 1.31001F, biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.3101F, 1.3102F, 1.32F, 1.32001F, 1.32001F, biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.3201F, 1.3202F, 1.38F, 1.33001F, 1.33001F, biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.3301F, 1.3302F, 1.34F, 1.34001F, 1.34001F, biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
-                new AttackAnimation.Phase(1.3401F, 1.3402F, 1.355F, 1.355001F, 1.355001F, biped.toolR, null)
+//                new AttackAnimation.Phase(1.3301F, 1.3302F, 1.34F, 1.34001F, 1.34001F, biped.toolR, null)
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
+//                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD),
+                new AttackAnimation.Phase(1.3401F, 1.3402F, 1.36F, 1.36F, 1.36F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD)))
@@ -413,17 +418,61 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.0F)
                 .addEvents(
                         AnimationEvent.TimeStampedEvent.create(0.15F, Animations.ReusableSources.PLAY_SOUND, AnimationEvent.Side.CLIENT).params(EpicFightSounds.SWORD_IN),
-                        AnimationEvent.TimeStampedEvent.create(0.15F, (ep, anim, objs) -> {
+                        AnimationEvent.TimeStampedEvent.create(0.1501F, (ep, anim, objs) -> {
                             PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(ep.getOriginal(), PlayerPatch.class);
                             ServerPlayerPatch serverPlayerPatch = EpicFightCapabilities.getEntityPatch(ep.getOriginal(), ServerPlayerPatch.class);
                             if (playerPatch != null && serverPlayerPatch != null && playerPatch.getSkill(GuHaoSkills.GUHAO_PASSIVE) != null) {
                                 playerPatch.getSkill(GuHaoSkills.GUHAO_PASSIVE).getDataManager().setData(GuHaoPassive.SHEATH, true);
                                 serverPlayerPatch.modifyLivingMotionByCurrentItem();
-                                SPPlayAnimation msg3 = new SPPlayAnimation(GuHaoAnimations.GUHAO_UCHIGATANA_SCRAP, serverPlayerPatch.getOriginal().getId(), 0.0F);
-                                EpicFightNetworkManager.sendToAllPlayerTrackingThisEntityWithSelf(msg3, serverPlayerPatch.getOriginal());
                             }
                         }, AnimationEvent.Side.SERVER)
                 );
+        JIANQIE = (new BasicAttackAnimation(0.1F, 0.35F,0.35F, 0.6F, 0.6F, null, biped.toolR, "biped/jianqie", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG))
+                .addProperty(AnimationProperty.AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.0F)
+                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
+                        AnimationEvent.TimeStampedEvent.create(0.35F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.dodge(ep), AnimationEvent.Side.SERVER),
+                })
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
+                    PlayerPatch<?> pp1 = EpicFightCapabilities.getEntityPatch(entitypatch.getOriginal(), PlayerPatch.class);
+                    if (pp1 != null) {
+                        pp1.getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f6f"), (event) -> {
+                            event.setResult(AttackResult.ResultType.MISSED);
+                            pp1.playSound(Sounds.FORESIGHT,1f,1f);
+                            pp1.getOriginal().addEffect(new MobEffectInstance(Effect.WUDI.get(),40,40));
+                            pp1.getOriginal().addEffect(new MobEffectInstance(EpicFightMobEffects.STUN_IMMUNITY.get(),40,40));
+                            if (pp1.getOriginal() != null && pp1.getOriginal().getType() == net.minecraft.world.entity.EntityType.PLAYER) {
+                                String uid = pp1.getOriginal().getUUID().toString();
+                                damageCount.put(uid, damageCount.getOrDefault(uid, 0));
+                                userDamage.put(uid, event.getAmount() * 1.5f + userDamage.getOrDefault(uid, 0.0f));
+                                keepUntil.put(uid, new Date().getTime() + 5000);
+                                Network.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) pp1.getOriginal()),
+                                        new DamagePackage("emit",
+                                                userDamage.get(uid),
+                                                damageCount.get(uid),
+                                                event.getAmount() * 1.5f));
+                            }
+                            event.setCanceled(true);
+                        });
+                        pp1.getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f7f"), (event) -> {
+                            if (pp1.getOriginal().hasEffect(Effect.WUDI.get())) {
+                                event.setResult(AttackResult.ResultType.MISSED);
+                                event.setCanceled(true);
+                            }
+                        });
+                    }
+                }, AnimationEvent.Side.SERVER))
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
+                    PlayerPatch<?> pp3 = EpicFightCapabilities.getEntityPatch(entitypatch.getOriginal(), PlayerPatch.class);
+                    if (pp3 != null) {
+                        pp3.getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f7f"));
+                        entitypatch.getOriginal().removeEffect(Effect.WUDI.get());
+                        entitypatch.getOriginal().removeEffect(EpicFightMobEffects.STUN_IMMUNITY.get());
+                    }
+
+                }, AnimationEvent.Side.SERVER));
     }
 
 

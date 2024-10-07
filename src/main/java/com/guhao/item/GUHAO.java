@@ -50,7 +50,7 @@ public class GUHAO extends WeaponItem implements IAnimatable {
             }
 
             public float getAttackDamageBonus() {
-                return 14f;
+                return 23f;
             }
 
             public int getLevel() {
@@ -65,7 +65,7 @@ public class GUHAO extends WeaponItem implements IAnimatable {
 
               }, 3, -1.9f,
                 new Item.Properties().tab(
-                        //StellarisdlcModTabs.STELLARISDLC
+//                        StellarisdlcModTabs.STELLARISDLC
                         StellariscraftModTabs.TAB_STELLARIS_CRAFT
                 ).fireResistant().rarity(Rarity.EPIC));
     }

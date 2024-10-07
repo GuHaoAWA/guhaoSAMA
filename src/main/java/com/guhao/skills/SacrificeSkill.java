@@ -12,8 +12,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import reascer.wom.gameasset.WOMAnimations;
+import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.client.events.engine.ControllEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
@@ -45,18 +47,18 @@ public class SacrificeSkill extends WeaponInnateSkill {
         this.comboAnimation.put(Animations.TACHI_AUTO3, (AttackAnimation) Animations.RUSHING_TEMPO3);
         this.comboAnimation.put(Animations.UCHIGATANA_AUTO1, (AttackAnimation) Animations.RUSHING_TEMPO1);
         this.comboAnimation.put(Animations.UCHIGATANA_AUTO3, (AttackAnimation) Animations.RUSHING_TEMPO2);
-        this.comboAnimation.put(Animations.LONGSWORD_AUTO2, (AttackAnimation) WOMAnimations.RUINE_AUTO_1);
-        this.comboAnimation.put(GuHaoAnimations.GUHAO_BIU, (AttackAnimation) GuHaoAnimations.BIU);
-        this.comboAnimation.put(GuHaoAnimations.GUHAO_DASH, (AttackAnimation) GuHaoAnimations.DENG_LONG);
+        this.comboAnimation.put(Animations.LONGSWORD_AUTO2, (AttackAnimation) WOMAnimations.RUINE_AUTO_1.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(GuHaoAnimations.GUHAO_BIU, (AttackAnimation) GuHaoAnimations.BIU.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(GuHaoAnimations.GUHAO_DASH, (AttackAnimation) GuHaoAnimations.DENG_LONG.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
 
-        this.comboAnimation.put(Animations.RUSHING_TEMPO3, (AttackAnimation) Animations.REVELATION_TWOHAND);
-        this.comboAnimation.put(Animations.RUSHING_TEMPO1, (AttackAnimation) Animations.REVELATION_TWOHAND);
-        this.comboAnimation.put(Animations.RUSHING_TEMPO2, (AttackAnimation) Animations.REVELATION_TWOHAND);
-        this.comboAnimation.put(WOMAnimations.RUINE_AUTO_1, (AttackAnimation) Animations.REVELATION_TWOHAND);
-        this.comboAnimation.put(GuHaoAnimations.BIU, (AttackAnimation) Animations.REVELATION_TWOHAND);
-        this.comboAnimation.put(WOMAnimations.KATANA_AUTO_3, (AttackAnimation) Animations.REVELATION_TWOHAND);
+        this.comboAnimation.put(Animations.RUSHING_TEMPO3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(Animations.RUSHING_TEMPO1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(Animations.RUSHING_TEMPO2, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(WOMAnimations.RUINE_AUTO_1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(GuHaoAnimations.BIU, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(WOMAnimations.KATANA_AUTO_3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
 
-        this.comboAnimation.put(Animations.REVELATION_TWOHAND, (AttackAnimation) GuHaoAnimations.GUHAO_UCHIGATANA_SCRAP);
+        this.comboAnimation.put(Animations.REVELATION_TWOHAND, (AttackAnimation) GuHaoAnimations.GUHAO_UCHIGATANA_SCRAP.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
     }
     @Override
     public void onInitiate(SkillContainer container) {

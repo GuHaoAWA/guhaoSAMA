@@ -24,7 +24,7 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class PassiveOverlay {
-	@SubscribeEvent(priority = EventPriority.NORMAL)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void eventHandler(RenderGameOverlayEvent.Pre event) {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
@@ -42,7 +42,7 @@ public class PassiveOverlay {
 
             if (lpp != null && lpp.getSkill(GuHaoSkills.GUHAO_PASSIVE) != null && lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && ArrayUtils.isEyes(staticAnimation)) {
                     RenderSystem.setShaderTexture(0, new ResourceLocation("guhao:textures/gui/skills/guhao_passive.png"));
-                    GuiComponent.blit(event.getMatrixStack(), posX - 8, posY - 8, 0, 0, 16, 16, 16, 16);
+                    GuiComponent.blit(event.getMatrixStack(), posX - 16, posY - 16, 0, 0, 32, 32, 32, 32);
             }
             RenderSystem.depthMask(true);
             RenderSystem.defaultBlendFunc();

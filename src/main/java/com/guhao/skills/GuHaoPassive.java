@@ -1,12 +1,16 @@
 package com.guhao.skills;
 
+import ca.weblite.objc.Client;
+import com.guhao.GuHaoAnimations;
 import com.guhao.init.Effect;
 import com.guhao.init.Items;
 import com.guhao.init.ParticleType;
 import net.minecraft.server.level.ServerPlayer;
 import yesman.epicfight.api.animation.types.DodgeAnimation;
+import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.network.EpicFightNetworkManager;
+import yesman.epicfight.network.client.CPExecuteSkill;
 import yesman.epicfight.network.server.SPPlayAnimation;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
@@ -41,21 +45,30 @@ public class GuHaoPassive extends PassiveSkill {
             }
         });
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID, (event) -> this.onReset(container));
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.BASIC_ATTACK_EVENT, EVENT_UUID, (event) -> {
+            if (container.getExecuter().getOriginal().isUsingItem()) {
+                CPExecuteSkill cpExecuteSkill = new CPExecuteSkill(container.getExecuter().getSkill(this).getSlotId());
+                ClientEngine.getInstance().controllEngine.addPacketToSend(cpExecuteSkill);
+                container.getExecuter().getOriginal().stopUsingItem();
+                event.setCanceled(true);
+                container.getExecuter().playAnimationSynchronized(GuHaoAnimations.JIANQIE,0.0F);
 
-
+            }
+        });
     }
 
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
         if (container.getExecuter().getOriginal().getMainHandItem().getItem() == Items.GUHAO.get() && container.getExecuter().getOriginal().hasEffect(Effect.GUHAO.get())) {
-            executorService.submit(() -> container.getExecuter().getOriginal().getLevel().addParticle(ParticleType.RING.get(), container.getExecuter().getOriginal().getX(), container.getExecuter().getOriginal().getY() + 0.05, container.getExecuter().getOriginal().getZ(), 0, 0, 0));
+            container.getExecuter().getOriginal().getLevel().addParticle(ParticleType.RING.get(), container.getExecuter().getOriginal().getX(), container.getExecuter().getOriginal().getY() + 0.05, container.getExecuter().getOriginal().getZ(), 0, 0, 0);
         }
     }
     @Override
     public void onRemoved(SkillContainer container) {
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.BASIC_ATTACK_EVENT, EVENT_UUID);
     }
     @Override
     public void onReset(SkillContainer container) {
