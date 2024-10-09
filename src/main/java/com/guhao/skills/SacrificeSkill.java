@@ -6,13 +6,13 @@ import com.guhao.init.Effect;
 import com.guhao.init.Key;
 import com.nameless.falchion.gameasset.FalchionAnimations;
 import io.netty.buffer.Unpooled;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import reascer.wom.gameasset.WOMAnimations;
-import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
@@ -23,9 +23,9 @@ import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.network.client.CPExecuteSkill;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
-import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -34,12 +34,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class SacrificeSkill extends WeaponInnateSkill {
-    private final Minecraft mc = Minecraft.getInstance();
     private final StaticAnimation[] animations;
     public final Map<StaticAnimation, AttackAnimation> comboAnimation = Maps.newHashMap();
     private static final UUID EVENT_UUID = UUID.fromString("d706b5bc-b98b-cc49-b83e-16ae590db349");
-    private boolean isShiftDown;
-    private boolean isCtrlDown;
+    public static SkillDataManager.SkillDataKey<Boolean> IS_CTRL_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
 
     public SacrificeSkill(Skill.Builder<? extends Skill> builder) {
         super(builder);
@@ -63,6 +61,7 @@ public class SacrificeSkill extends WeaponInnateSkill {
     @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
+        container.getDataManager().registerData(IS_CTRL_DOWN);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_POST, EVENT_UUID, (event) -> {
             ServerPlayerPatch executer = event.getPlayerPatch();
             DynamicAnimation animation = executer.getAnimator().getPlayerFor(null).getAnimation();
@@ -125,12 +124,23 @@ public class SacrificeSkill extends WeaponInnateSkill {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void executeOnClient(LocalPlayerPatch executer, FriendlyByteBuf args) {
-        isShiftDown = Key.SHIFT.isDown();
-        isCtrlDown = Key.CTRL.isDown();
+    public void updateContainer(SkillContainer container) {
+        super.updateContainer(container);
+        if(container.getExecuter().isLogicalClient()){
+            container.getDataManager().setDataSync(IS_CTRL_DOWN, Key.CTRL.isDown(), ((LocalPlayer) container.getExecuter().getOriginal()));
+        }
     }
-//    @OnlyIn(Dist.CLIENT)
+
+    /**
+     * 保险
+     */
+    public static void register(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            IS_CTRL_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+        });
+    }
+
+    //    @OnlyIn(Dist.CLIENT)
 //    @Override
 //    public boolean shouldDraw(SkillContainer container) {
 //        PlayerPatch<?> executer = container.getExecuter();
@@ -150,16 +160,14 @@ public class SacrificeSkill extends WeaponInnateSkill {
 
     @Override
     public void executeOnServer(ServerPlayerPatch executer, FriendlyByteBuf args) {
-        LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
         boolean isSheathed = executer.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(GuHaoPassive.SHEATH);
-        this.executeOnClient(lpp,args);
         while (true) {
             if (this.comboAnimation.containsKey(executer.getAnimator().getPlayerFor(null).getAnimation())) {
                 executer.playAnimationSynchronized(this.comboAnimation.get(executer.getAnimator().getPlayerFor(null).getAnimation()), 0.0F);
                 super.executeOnServer(executer, args);
                 break;
             }
-            if (isShiftDown && (executer.getSkill(GuHaoSkills.SACRIFICE).getStack() >= 10)) {
+            if (executer.getOriginal().isShiftKeyDown() && (executer.getSkill(GuHaoSkills.SACRIFICE).getStack() >= 10)) {
                 if (executer.getOriginal().hasEffect(Effect.GUHAO.get())) {
                     if (isSheathed) {
                         executer.playAnimationSynchronized(GuHaoAnimations.BLOOD_JUDGEMENT, -0.196F);
@@ -181,7 +189,7 @@ public class SacrificeSkill extends WeaponInnateSkill {
                 break;
             }
 ///////////////////////////////////////////////////////////////////////////
-            if (isCtrlDown) {
+            if (executer.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().getDataValue(IS_CTRL_DOWN)) {
                 int i = args.readInt();
                 executer.playAnimationSynchronized(this.animations[i], 0.0F);
                 super.executeOnServer(executer, args);
