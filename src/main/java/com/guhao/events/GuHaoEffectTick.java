@@ -9,7 +9,9 @@ public class GuHaoEffectTick {
            Vec3 pos = entity.position();
            HsvFilterEffect effect = new HsvFilterEffect(pos);
            effect.lifetime = 20;
-           ScreenEffectEngine.PushScreenEffect(effect);
+           if(entity.level.isClientSide()){
+               ScreenEffectEngine.PushScreenEffect(effect);
+           }
         }
     }
 
