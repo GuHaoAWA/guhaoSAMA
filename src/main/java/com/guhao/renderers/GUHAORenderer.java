@@ -12,7 +12,6 @@ import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
@@ -22,13 +21,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.checkerframework.checker.units.qual.A;
-import software.bernie.example.registry.SoundRegistry;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.PlayState;
@@ -286,15 +280,4 @@ public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlay
 		return PlayState.CONTINUE;
 	}
 
-	private <ENTITY extends IAnimatable> void soundListener(SoundKeyframeEvent<ENTITY> event) {
-		// The animation for the JackInTheBoxItem has a sound keyframe at time 0:00.
-		// As soon as that keyframe gets hit this method fires and it starts playing the
-		// sound to the current player.
-		// The music is synced with the animation so the box opens as soon as the music
-		// plays the box opening sound
-		LocalPlayer player = Minecraft.getInstance().player;
-		if (player != null) {
-			player.playSound(SoundRegistry.JACK_MUSIC.get(), 1, 1);
-		}
-	}
 }
