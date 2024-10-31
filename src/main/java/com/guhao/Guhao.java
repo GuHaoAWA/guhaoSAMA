@@ -4,6 +4,7 @@ import com.dfdyz.epicacg.network.Netmgr;
 import com.guhao.capability.GuHaoCapability;
 import com.guhao.init.*;
 import com.guhao.skills.GuHaoSkills;
+import com.guhao.skills.SacrificeSkill;
 import com.guhao.star.efmex.IntegrationHandler;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -46,15 +47,16 @@ public class Guhao {
         GuHaoSkills.registerSkills();
         Entities.REGISTRY.register(bus);
         bus.addListener(this::setupClient);
-        bus.addListener(PostEffects::register);
+//        bus.addListener(PostEffects::register);
         bus.addListener(GuHaoCapability::register);
         bus.addListener(GuHaoAnimations::registerAnimations);
-        bus.addListener(ParticleType::RP);
+//        bus.addListener(ParticleType::RP);
+        bus.addListener(SacrificeSkill::register);
         Effect.REGISTRY.register(bus);
         ParticleType.PARTICLES.register(bus);
         Items.REGISTRY.register(bus);
         GeckoLib.initialize();
-        bus.register(this);
+//        bus.register(this);
     }
 
     public static <T> void addNetworkMessage(Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {

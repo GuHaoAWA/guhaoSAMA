@@ -47,8 +47,8 @@ public class GuHaoPassive extends PassiveSkill {
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID, (event) -> this.onReset(container));
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.BASIC_ATTACK_EVENT, EVENT_UUID, (event) -> {
             if (container.getExecuter().getOriginal().isUsingItem()) {
-                CPExecuteSkill cpExecuteSkill = new CPExecuteSkill(container.getExecuter().getSkill(this).getSlotId());
-                ClientEngine.getInstance().controllEngine.addPacketToSend(cpExecuteSkill);
+//                CPExecuteSkill cpExecuteSkill = new CPExecuteSkill(container.getExecuter().getSkill(this).getSlotId());
+//                ClientEngine.getInstance().controllEngine.addPacketToSend(cpExecuteSkill);
                 container.getExecuter().getOriginal().stopUsingItem();
                 event.setCanceled(true);
                 container.getExecuter().playAnimationSynchronized(GuHaoAnimations.JIANQIE,0.0F);

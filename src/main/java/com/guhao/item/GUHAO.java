@@ -5,7 +5,6 @@ import com.guhao.events.HitEvent;
 import com.guhao.renderers.GUHAORenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.jobin.stellariscraft.init.StellariscraftModTabs;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.language.I18n;
@@ -150,7 +149,6 @@ public class GUHAO extends WeaponItem implements IAnimatable {
     private <P extends Item & IAnimatable> PlayState idlePredicate(AnimationEvent<P> event) {
         if (transformType != null) {
             if (this.animationprocedure.equals("empty")) {
-                Minecraft mc =Minecraft.getInstance();
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("0", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }

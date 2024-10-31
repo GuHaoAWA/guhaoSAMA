@@ -1,6 +1,7 @@
 package com.guhao.init;
 
 
+import com.guhao.Guhao;
 import com.guhao.client.particle.par.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
@@ -8,6 +9,8 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -15,6 +18,8 @@ import yesman.epicfight.particle.HitParticleType;
 
 import static com.guhao.Guhao.MODID;
 
+
+@Mod.EventBusSubscriber(modid = Guhao.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ParticleType {
     public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLES;
     public static final RegistryObject<SimpleParticleType> TRAIL_GUHAO;
@@ -29,7 +34,7 @@ public class ParticleType {
     public static final RegistryObject<SimpleParticleType> ENTITY_AFTER_IMG_BLOOD;
     public static final RegistryObject<SimpleParticleType> GUHAO_LASER;
 
-    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
     public static void RP(ParticleFactoryRegisterEvent event) {
         ParticleEngine PE = Minecraft.getInstance().particleEngine;
         PE.register(TRAIL_GUHAO.get(), TrailParticleGuhao.Provider::new);
