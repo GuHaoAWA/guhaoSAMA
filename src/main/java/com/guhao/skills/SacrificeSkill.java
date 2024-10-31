@@ -6,7 +6,6 @@ import com.guhao.init.Effect;
 import com.guhao.init.Key;
 import com.nameless.falchion.gameasset.FalchionAnimations;
 import io.netty.buffer.Unpooled;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +13,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import reascer.wom.gameasset.WOMAnimations;
-import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
@@ -28,7 +26,6 @@ import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
-import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -37,7 +34,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class SacrificeSkill extends WeaponInnateSkill {
-
     private final StaticAnimation[] animations;
     public final Map<StaticAnimation, AttackAnimation> comboAnimation = Maps.newHashMap();
     private static final UUID EVENT_UUID = UUID.fromString("d706b5bc-b98b-cc49-b83e-16ae590db349");
@@ -134,12 +130,17 @@ public class SacrificeSkill extends WeaponInnateSkill {
             container.getDataManager().setDataSync(IS_CTRL_DOWN, Key.CTRL.isDown(), ((LocalPlayer) container.getExecuter().getOriginal()));
         }
     }
+
+    /**
+     * 保险
+     */
     public static void register(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             IS_CTRL_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
         });
     }
-//    @OnlyIn(Dist.CLIENT)
+
+    //    @OnlyIn(Dist.CLIENT)
 //    @Override
 //    public boolean shouldDraw(SkillContainer container) {
 //        PlayerPatch<?> executer = container.getExecuter();

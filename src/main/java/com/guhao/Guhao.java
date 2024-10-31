@@ -44,19 +44,19 @@ public class Guhao {
         }
         //Tabs.load();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        GuHaoSkills.registerSkills();
+//        GuHaoSkills.registerSkills();
         Entities.REGISTRY.register(bus);
         bus.addListener(this::setupClient);
 //        bus.addListener(PostEffects::register);
         bus.addListener(GuHaoCapability::register);
         bus.addListener(GuHaoAnimations::registerAnimations);
 //        bus.addListener(ParticleType::RP);
-        bus.addListener(SacrificeSkill::register);
+//        bus.addListener(SacrificeSkill::register);
         Effect.REGISTRY.register(bus);
         ParticleType.PARTICLES.register(bus);
         Items.REGISTRY.register(bus);
         GeckoLib.initialize();
-//        bus.register(this);
+        bus.register(this);
     }
 
     public static <T> void addNetworkMessage(Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {
@@ -76,4 +76,3 @@ public class Guhao {
         GuHaoSkills.registerSkills();
     }
 }
-

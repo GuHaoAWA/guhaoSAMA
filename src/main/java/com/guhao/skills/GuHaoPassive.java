@@ -1,6 +1,5 @@
 package com.guhao.skills;
 
-import ca.weblite.objc.Client;
 import com.guhao.GuHaoAnimations;
 import com.guhao.init.Effect;
 import com.guhao.init.Items;
@@ -21,12 +20,9 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class GuHaoPassive extends PassiveSkill {
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
     public static final SkillDataManager.SkillDataKey<Boolean> SHEATH;
     private static final UUID EVENT_UUID;
 

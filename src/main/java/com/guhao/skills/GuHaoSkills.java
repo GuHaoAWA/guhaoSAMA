@@ -19,7 +19,7 @@ public class GuHaoSkills {
     }
 
     public static void registerSkills() {
-        SkillManager.register(SacrificeSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), MODID, "sacrifice");
+        SkillManager.register(SacrificeSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), "guhao", "sacrifice");
         SkillManager.register(GuHaoPassive::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setActivateType(Skill.ActivateType.DURATION).setResource(Skill.Resource.COOLDOWN),MODID, "guhao_passive");
     }
 
