@@ -174,7 +174,7 @@ public class ONEJCBladeTrail extends SingleQuadParticle {
             double ex = er * Math.sin((double)theta2) * (double)scale;
             double ey = (double)r2 * Math.cos((double)beta2) * (double)scale;
             double ez = er * Math.cos((double)theta2) * (double)scale;
-            return new ONEJCBladeTrail(worldIn, x, y + 4.25, z, 0, (ey - sy)*1.2, 0);
+            return new ONEJCBladeTrail(worldIn, x, y + 4.25, z, 0, (ey - sy)*1.3, 0);
         }
     }
 }

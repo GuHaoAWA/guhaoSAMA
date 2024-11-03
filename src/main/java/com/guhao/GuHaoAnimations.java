@@ -9,6 +9,7 @@ import com.dfdyz.epicacg.utils.MoveCoordFuncUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.guhao.api.GuHaoSpecialAttackAnimation;
+import com.guhao.client.particle.par.BloodBladeTrail;
 import com.guhao.effects.WuDiEffect;
 import com.guhao.init.Effect;
 import com.guhao.init.ParticleType;
@@ -17,9 +18,12 @@ import com.guhao.skills.GuHaoPassive;
 import com.guhao.skills.GuHaoSkills;
 import com.guhao.star.regirster.Sounds;
 import com.guhao.utils.BattleUtils;
+import com.guhao.utils.RenderUtils;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -411,7 +415,12 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFuncUtils.TraceLockedTargetEx(7.5F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
                         AnimationEvent.TimeStampedEvent.create(0.365F, (ep, anim, objs) -> {Vec3 pos = ep.getOriginal().position();ep.playSound(EpicFightSounds.ROLL, 0, 0);ep.getOriginal().level.addAlwaysVisibleParticle(EpicFightParticles.AIR_BURST.get(), pos.x, pos.y + ep.getOriginal().getBbHeight() * 0.5D, pos.z, 0, -1, 2);}, AnimationEvent.Side.CLIENT),
-                        AnimationEvent.TimeStampedEvent.create(1.3551F, Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0.0F, -1.0F, 0.0F), Armatures.BIPED.toolR, 2.0, 0.4F),
+                        AnimationEvent.TimeStampedEvent.create(1.27F, (ep, anim, objs) -> {
+                            Vec3 playerPos = ep.getOriginal().position();
+                            Vec3 lookVec = ep.getOriginal().getLookAngle();
+                            Vec3 frontPos = playerPos.add(lookVec.x * 1, lookVec.y * 1, lookVec.z * 1);
+                            if (ep.getOriginal().getLevel() instanceof ServerLevel serverLevel) serverLevel.sendParticles(ParticleType.ONE_JC_BLOOD_JUDGEMENT_LONG.get(), frontPos.x, frontPos.y, frontPos.z, 1, 0.05, 0, 0.05, 1);
+                        }, AnimationEvent.Side.SERVER)
                 })
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, DENGLONG);
 //                .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(0.93F, 1.35F, 9, biped.toolR, InteractionHand.MAIN_HAND)));

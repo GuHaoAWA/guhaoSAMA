@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class BloodJudgementParticle extends NoRenderParticle {
     public BloodJudgementParticle(ClientLevel level, double x, double y, double z, double rx, double ry, double rz) {
         super(level, x, y, z, rx, ry, rz);
-        this.lifetime = 41;
+        this.lifetime = 42;
     }
 
         public boolean shouldCull() {
@@ -51,8 +51,8 @@ public class BloodJudgementParticle extends NoRenderParticle {
             double xCoord = radius * Math.sin(randPhi) * Math.cos(randTheta); // 根据球面坐标公式计算x坐标
             double yCoord = radius * Math.sin(randPhi) * Math.sin(randTheta); // 根据球面坐标公式计算y坐标
             double zCoord = radius * Math.cos(randPhi); // 根据球面坐标公式计算z坐标
-            RenderUtils.AddParticle(this.level, new BloodBladeTrail(this.level, sx + this.x, sy + this.y + 1.2, sz + this.z, 0, (ey - sy)*3.5, 0));
-            RenderUtils.AddParticle(this.level, new BloodBladeTrail(this.level, sx + this.x, -(sy + this.y + 1.2), sz + this.z, 0, -((ey - sy)*3.5), 0));
+            RenderUtils.AddParticle(this.level, new BloodBladeTrail(this.level, sx + this.x, sy + this.y + 1.2, sz + this.z, 0, (ey - sy)*4, 0));
+            RenderUtils.AddParticle(this.level, new BloodBladeTrail(this.level, sx + this.x, -(sy + this.y + 1.2), sz + this.z, 0, -((ey - sy)*4), 0));
         }
 
     }

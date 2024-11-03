@@ -31,6 +31,7 @@ public class ParticleType {
     public static final RegistryObject<SimpleParticleType> BLOOD_FIRE_FLAME;
     public static final RegistryObject<SimpleParticleType> BLOOD_JUDGEMENT;
     public static final RegistryObject<SimpleParticleType> ONE_JC_BLOOD_JUDGEMENT;
+    public static final RegistryObject<SimpleParticleType> ONE_JC_BLOOD_JUDGEMENT_LONG;
     public static final RegistryObject<SimpleParticleType> ENTITY_AFTER_IMG_BLOOD;
     public static final RegistryObject<SimpleParticleType> GUHAO_LASER;
 
@@ -46,6 +47,7 @@ public class ParticleType {
         PE.register(BLOOD_FIRE_FLAME.get(), BloodFireParticle.SmallFlameProvider::new);
         PE.register(BLOOD_JUDGEMENT.get(), BloodJudgementParticle.Provider::new);
         PE.register(ONE_JC_BLOOD_JUDGEMENT.get(), ONEJCBladeTrail.Provider::new);
+        PE.register(ONE_JC_BLOOD_JUDGEMENT_LONG.get(), ONEJCBladeTrailLong.Provider::new);
         PE.register(ENTITY_AFTER_IMG_BLOOD.get(), After_Image_BloodParticle.Provider::new);
         PE.register(GUHAO_LASER.get(), Guhao_Laser.Provider::new);
     }
@@ -64,6 +66,7 @@ public class ParticleType {
         BLOOD_FIRE_FLAME = PARTICLES.register("blood_fire_flame", () -> new SimpleParticleType(true));
         BLOOD_JUDGEMENT = PARTICLES.register("blood_judgement", () -> new SimpleParticleType(true));
         ONE_JC_BLOOD_JUDGEMENT = PARTICLES.register("one_jc_blood_judgement", () -> new HitParticleType(true));
+        ONE_JC_BLOOD_JUDGEMENT_LONG = PARTICLES.register("one_jc_blood_judgement_long", () -> new HitParticleType(true));
         ENTITY_AFTER_IMG_BLOOD = PARTICLES.register("after_image_blood", () -> new SimpleParticleType(true));
         GUHAO_LASER = PARTICLES.register("guhao_laser", () -> new SimpleParticleType(true));
     }

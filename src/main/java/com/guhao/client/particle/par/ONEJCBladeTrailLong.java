@@ -20,18 +20,13 @@ import java.util.Random;
 import static com.guhao.renderers.GuHaoRenderType.getBloomRenderTypeByTexture;
 
 @OnlyIn(Dist.CLIENT)
-public class BloodBladeTrail extends SingleQuadParticle {
+public class ONEJCBladeTrailLong extends SingleQuadParticle {
     protected float timeOffset = 0f;
     protected final double X,Y,Z;
-    private double radius = 2;
-    private double startX;
-    private double startY;
-    private double startZ;
-    private double currentAngle;
-    private double angularSpeed;
-    public BloodBladeTrail(ClientLevel level, double x, double y, double z, double rx, double ry, double rz) {
+
+    public ONEJCBladeTrailLong(ClientLevel level, double x, double y, double z, double rx, double ry, double rz) {
         super(level, x, y, z, rx, ry, rz);
-        this.lifetime = 10;
+        this.lifetime = 16;
         timeOffset = random.nextFloat(0,1);
         X = x;
         Y = y;
@@ -40,15 +35,10 @@ public class BloodBladeTrail extends SingleQuadParticle {
         this.yd = ry;
         this.zd = rz;
 
-        rCol = 1;
-        gCol = 1f;
-        bCol = 1f;
-
-        this.startX = x;
-        this.startY = y;
-        this.startZ = z;
-
-        alpha=0.5f;
+        rCol = 1.0f;
+        gCol = 0.6902f;
+        bCol = 0.45f;
+        alpha = 0.8f;
     }
 
     @Override
@@ -77,12 +67,14 @@ public class BloodBladeTrail extends SingleQuadParticle {
 
     @Override
     public void tick() {
-        super.tick();
-        // 根据角速度更新粒子位置
         if (this.age++ > this.lifetime) {
             this.remove();
         }
     }
+
+
+
+
     @Override
     public void render(VertexConsumer buffer, Camera camera, float pt) {
         if(!PostEffectPipelines.isActive()) return;
@@ -182,7 +174,7 @@ public class BloodBladeTrail extends SingleQuadParticle {
             double ex = er * Math.sin((double)theta2) * (double)scale;
             double ey = (double)r2 * Math.cos((double)beta2) * (double)scale;
             double ez = er * Math.cos((double)theta2) * (double)scale;
-            return new BloodBladeTrail(worldIn, sx + x, sy + y + 1.2, sz + z, -ex - sx, ey - sy, -ez - sz);
+            return new ONEJCBladeTrailLong(worldIn, x, y + 10, z, 0, (ey - sy)*3.2, 0);
         }
     }
 }
