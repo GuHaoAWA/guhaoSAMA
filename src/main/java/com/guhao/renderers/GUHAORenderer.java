@@ -23,6 +23,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.PlayState;
@@ -43,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("deprecated")
+@OnlyIn(Dist.CLIENT)
 //壁虎立体阿尔法通道渐变变色呼吸灯式增添关键帧事件的mc事例判断的动态变换模型的动态模型和动态动画的动画搭配if判断的动态发光贴图联动efm的模型
 public class GUHAORenderer extends GeoItemRenderer<GUHAO> implements RendersPlayerArms, AnimationController.IParticleListener<GUHAO>, IAnimatable, ISyncable {
 	public GUHAORenderer() {

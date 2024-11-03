@@ -31,9 +31,7 @@ public class Entities {
 
 	@SubscribeEvent
 	public static void init(FMLCommonSetupEvent event) {
-		event.enqueueWork(() -> {
-			DoppelgangerEntity.init();
-		});
+		event.enqueueWork(DoppelgangerEntity::init);
 
 	}
 

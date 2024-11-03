@@ -26,7 +26,7 @@ public class Key {
         ClientRegistry.registerKeyBinding(ENDER);
         ClientRegistry.registerKeyBinding(BLOOD_BURST);
         ClientRegistry.registerKeyBinding(CTRL);
-        ClientRegistry.registerKeyBinding(SHIFT);
+//        ClientRegistry.registerKeyBinding(SHIFT);
     }
 
     @Mod.EventBusSubscriber({Dist.CLIENT})

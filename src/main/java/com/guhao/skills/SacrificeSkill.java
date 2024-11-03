@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.guhao.GuHaoAnimations;
 import com.guhao.init.Effect;
 import com.guhao.init.Key;
+import com.guhao.star.efmex.StarAnimations;
 import com.nameless.falchion.gameasset.FalchionAnimations;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.player.Input;
@@ -45,16 +46,16 @@ public class SacrificeSkill extends WeaponInnateSkill {
         this.comboAnimation.put(Animations.TACHI_AUTO3, (AttackAnimation) Animations.RUSHING_TEMPO3);
         this.comboAnimation.put(Animations.UCHIGATANA_AUTO1, (AttackAnimation) Animations.RUSHING_TEMPO1);
         this.comboAnimation.put(Animations.UCHIGATANA_AUTO3, (AttackAnimation) Animations.RUSHING_TEMPO2);
-        this.comboAnimation.put(Animations.LONGSWORD_AUTO2, (AttackAnimation) WOMAnimations.RUINE_AUTO_1.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(Animations.LONGSWORD_AUTO2, (AttackAnimation) StarAnimations.KATANA_SHEATH_DASH.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
         this.comboAnimation.put(GuHaoAnimations.GUHAO_BIU, (AttackAnimation) GuHaoAnimations.BIU.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
         this.comboAnimation.put(GuHaoAnimations.GUHAO_DASH, (AttackAnimation) GuHaoAnimations.DENG_LONG.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
 
-        this.comboAnimation.put(Animations.RUSHING_TEMPO3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
-        this.comboAnimation.put(Animations.RUSHING_TEMPO1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
-        this.comboAnimation.put(Animations.RUSHING_TEMPO2, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
-        this.comboAnimation.put(WOMAnimations.RUINE_AUTO_1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
-        this.comboAnimation.put(GuHaoAnimations.BIU, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
-        this.comboAnimation.put(WOMAnimations.KATANA_AUTO_3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(Animations.RUSHING_TEMPO3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+        this.comboAnimation.put(Animations.RUSHING_TEMPO1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+        this.comboAnimation.put(Animations.RUSHING_TEMPO2, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+        this.comboAnimation.put(WOMAnimations.RUINE_AUTO_1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+        this.comboAnimation.put(GuHaoAnimations.BIU, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+        this.comboAnimation.put(WOMAnimations.KATANA_AUTO_3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
 
         this.comboAnimation.put(Animations.REVELATION_TWOHAND, (AttackAnimation) GuHaoAnimations.GUHAO_UCHIGATANA_SCRAP.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
     }
@@ -126,7 +127,7 @@ public class SacrificeSkill extends WeaponInnateSkill {
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        if(container.getExecuter().isLogicalClient()){
+        if(container.getExecuter().isLogicalClient()) {
             container.getDataManager().setDataSync(IS_CTRL_DOWN, Key.CTRL.isDown(), ((LocalPlayer) container.getExecuter().getOriginal()));
         }
     }

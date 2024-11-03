@@ -3,9 +3,9 @@
   {
     "common":
     {
-      "armor_negation":42.0,
-      "impact":1.35,
-      "max_strikes":99
+      "armor_negation":66.6,
+      "impact":2.25,
+      "max_strikes":100
     }
   },
   "type":"guhao"

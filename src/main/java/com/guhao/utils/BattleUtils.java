@@ -301,8 +301,8 @@ public class BattleUtils {
                         int amplifier = livingEntity.getEffect(new MobEffectInstance(EXSANGUINATION).getEffect()).getAmplifier();
                         if (world instanceof ServerLevel _level) {
                             Random r = new Random();
-                            _level.playSound(null, new BlockPos(entityiterator.getX(), entityiterator.getY(), entityiterator.getZ()), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BLOOD.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.75f,1.25f));
-                            _level.sendParticles(EpicFightParticles.EVISCERATE.get(), livingEntity.getX(), livingEntity.getY() + 1, livingEntity.getZ(), amplifier, 0.5, 0.5, 0.5, 0);
+                            _level.playSound(null, new BlockPos(entityiterator.getX(), entityiterator.getY(), entityiterator.getZ()), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BLOOD.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.8f,1.2f));
+                            _level.sendParticles(EpicFightParticles.EVISCERATE.get(), livingEntity.getX(), livingEntity.getY() + 1.2, livingEntity.getZ(), 1, 0.25, 0.25, 0.25, 0);
                         }
                         livingEntity.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier * 2.5F);
                         livingEntity.removeEffect(EXSANGUINATION);
