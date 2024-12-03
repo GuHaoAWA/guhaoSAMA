@@ -13,7 +13,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import reascer.wom.gameasset.WOMAnimations;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
@@ -53,9 +52,9 @@ public class SacrificeSkill extends WeaponInnateSkill {
         this.comboAnimation.put(Animations.RUSHING_TEMPO3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
         this.comboAnimation.put(Animations.RUSHING_TEMPO1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
         this.comboAnimation.put(Animations.RUSHING_TEMPO2, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
-        this.comboAnimation.put(WOMAnimations.RUINE_AUTO_1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+        this.comboAnimation.put(StarAnimations.KATANA_SHEATH_DASH, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
         this.comboAnimation.put(GuHaoAnimations.BIU, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
-        this.comboAnimation.put(WOMAnimations.KATANA_AUTO_3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+
 
         this.comboAnimation.put(Animations.REVELATION_TWOHAND, (AttackAnimation) GuHaoAnimations.GUHAO_UCHIGATANA_SCRAP.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
     }

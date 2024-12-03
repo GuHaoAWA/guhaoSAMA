@@ -16,6 +16,7 @@ import com.guhao.init.ParticleType;
 import com.guhao.ranksystem.ServerEventExtra;
 import com.guhao.skills.GuHaoPassive;
 import com.guhao.skills.GuHaoSkills;
+import com.guhao.star.api.animation.types.SpecialActionAnimation;
 import com.guhao.star.regirster.Sounds;
 import com.guhao.utils.BattleUtils;
 import com.guhao.utils.RenderUtils;
@@ -145,8 +146,7 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, null)
                 .addProperty(AnimationProperty.ActionAnimationProperty.RESET_PLAYER_COMBO_COUNTER, true);
 //                .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(0.1f, 0.65f, 6, biped.toolR, InteractionHand.MAIN_HAND)));
-        ENDER = (new ActionAnimation(0.1F, 0.485F, "biped/ender", biped))
-                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
+        ENDER = (new SpecialActionAnimation(0.1F, 0.485F, "biped/ender", biped))
                 .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
                         AnimationEvent.TimeStampedEvent.create(0.381F, (livingEntityPatch, staticAnimation, objects) -> BattleUtils.Guhao_Battle_utils.ender(livingEntityPatch), AnimationEvent.TimeStampedEvent.Side.SERVER)});
         V_GUHAO_SHEATHING_AUTO1 = (new BasicAttackAnimation(0.1F, 0.16F, 0.45F, 0.785F, null, biped.toolR, "biped/auto1", biped)
@@ -313,10 +313,11 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.RESET_PLAYER_COMBO_COUNTER, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.7F, 1.32F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
+                        AnimationEvent.TimeStampedEvent.create(0.0F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_geo(ep), AnimationEvent.Side.BOTH),
                         //AnimationEvent.TimeStampedEvent.create(0f, (ep, anim, objs) -> CameraEvents.SetAnim(BLOOD_JUDGEMENT_C, ep.getOriginal(), true), AnimationEvent.Side.CLIENT),
                         AnimationEvent.TimeStampedEvent.create(0.295F, Animations.ReusableSources.PLAY_SOUND, AnimationEvent.Side.SERVER).params(EpicFightSounds.SWORD_IN),
                         AnimationEvent.TimeStampedEvent.create(0.412F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_sound_1(ep), AnimationEvent.Side.SERVER),
-                        AnimationEvent.TimeStampedEvent.create(0.744F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_post(ep), AnimationEvent.Side.CLIENT),
+//                        AnimationEvent.TimeStampedEvent.create(0.744F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_post(ep), AnimationEvent.Side.CLIENT),
                         AnimationEvent.TimeStampedEvent.create(0.745F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_p2(ep), AnimationEvent.Side.CLIENT),
                         AnimationEvent.TimeStampedEvent.create(0.795F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_p2(ep), AnimationEvent.Side.CLIENT),
                         AnimationEvent.TimeStampedEvent.create(0.845F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_p2(ep), AnimationEvent.Side.CLIENT),

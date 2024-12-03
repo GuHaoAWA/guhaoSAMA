@@ -4,6 +4,7 @@ import com.dfdyz.epicacg.client.screeneffect.ColorDispersionEffect;
 import com.guhao.init.Effect;
 import com.guhao.init.ParticleType;
 import com.guhao.init.Sounds;
+import com.guhao.item.GUHAO;
 import io.redspace.ironsspellbooks.entity.spells.blood_needle.BloodNeedle;
 import io.redspace.ironsspellbooks.entity.spells.blood_slash.BloodSlashProjectile;
 import io.redspace.ironsspellbooks.registries.SoundRegistry;
@@ -15,7 +16,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -23,13 +23,12 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
-import yesman.epicfight.api.animation.types.DodgeAnimation;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -67,14 +66,12 @@ public class BattleUtils {
             projectileLevel.addFreshEntity(_entityToSpawn);
         }
         public static void blood_needles(LivingEntityPatch<?> ep) {
-
-
             ep.playSound(SoundRegistry.BLOOD_CAST.get(), 1.0F, 1.0F);
                 Random random = new Random();
                 Level world = ep.getOriginal().level;
                 LivingEntity entity = ep.getOriginal();
                 int count = 10;
-                float damage = random.nextFloat(5f, 10f);
+                float damage = random.nextFloat(6f, 12f);
                 int degreesPerNeedle = 360 / count;
                 var raycast = Utils.raycastForEntity(world, entity, 32, true);
                 for (int i = 0; i < count; i++) {
@@ -111,20 +108,20 @@ public class BattleUtils {
             double x = position.x;
             double y = position.y;
             double z = position.z;
-            LightningBolt entityToSpawn = EntityType.LIGHTNING_BOLT.create(level);
+            if (level instanceof ServerLevel _level) {
+                LightningBolt entityToSpawn = EntityType.LIGHTNING_BOLT.create(level);
                 entityToSpawn.moveTo(Vec3.atBottomCenterOf(new BlockPos(x, y, z)));
                 entityToSpawn.setVisualOnly(true);
-                level.addFreshEntity(entityToSpawn);
-            if (level instanceof ServerLevel _level) {
+                _level.addFreshEntity(entityToSpawn);
                 _level.sendParticles(ParticleType.RED_RING.get(), x, y, z, 1, 0.1, 0.1, 0.1, 0);
                 _level.sendParticles(ParticleType.RED_RING.get(), x, y+0.1, z, 1, 0.1, 0.1, 0.1, 0);
                 _level.sendParticles(ParticleType.RED_RING.get(), x, y+0.2, z, 1, 0.1, 0.1, 0.1, 0);
+                _level.sendParticles(EpicFightParticles.EVISCERATE.get(), x, y+0.45, z, 1, 0, 0, 0, 0);
             }
-            level.addParticle(EpicFightParticles.EVISCERATE.get(),x,y+0.45,z,0,0,0);
             livingEntityPatch.getOriginal().clearFire();
-
             livingEntityPatch.getOriginal().addEffect(new MobEffectInstance(Effect.GUHAO.get(), 1210, 0, false, true));
             livingEntityPatch.getOriginal().addEffect(new MobEffectInstance(EpicFightMobEffects.STUN_IMMUNITY.get(), 1210, 0, false, true));
+            livingEntityPatch.getOriginal().addEffect(new MobEffectInstance(com.guhao.star.regirster.Effect.REALLY_STUN_IMMUNITY.get(), 1210, 0, false, true));
 
             List<Entity> _entfound = level.getEntitiesOfClass(Entity.class, new AABB(position, position).inflate(50 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(position))).toList();
             for (Entity entityiterator : _entfound) {
@@ -137,9 +134,13 @@ public class BattleUtils {
                     livingEntity.hurt(DamageSource.playerAttack(level.getNearestPlayer(livingEntityPatch.getOriginal(), -1)), 1);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(livingEntity, LivingEntityPatch.class);
                     if (entitypatch != null) {
-                        entitypatch.playAnimationSynchronized(Animations.BIPED_KNOCKDOWN, 0.0F);
+//                        entitypatch.playAnimationSynchronized(Animations.BIPED_KNOCKDOWN, 0.0F);
+                        entitypatch.applyStun(StunType.KNOCKDOWN,5.0f);
                     }
-                    level.addParticle(ParticleType.TWO_EYE.get(), (livingEntity.getX()), (livingEntity.getY()+1), (livingEntity.getZ()), 0, 0, 0);
+                    if (livingEntity.getLevel() instanceof ServerLevel serverLevel) {
+                        serverLevel.sendParticles(ParticleType.TWO_EYE.get(), (livingEntity.getX()), (livingEntity.getY()+1), (livingEntity.getZ()), 1, 0, 0,0,0);
+                        serverLevel.sendParticles(ParticleType.ONE_JC_BLOOD_JUDGEMENT_LONG.get(), (livingEntity.getX()), (livingEntity.getY()+1), (livingEntity.getZ()), 1, 0, 0,0,0);
+                    }
                 }
             }
 
@@ -388,6 +389,11 @@ public class BattleUtils {
             if (entitypatch != null) {
                 entitypatch.getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f6f"));
             }
+        }
+
+        public static void blood_judgement_geo(LivingEntityPatch<?> ep) {
+            ItemStack itemstack = ep.getOriginal().getMainHandItem();
+            if (itemstack.getItem() instanceof GUHAO) itemstack.getOrCreateTag().putString("geckoAnim", "1");
         }
     }
 }

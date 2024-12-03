@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -76,7 +77,7 @@ public class ONEJCBladeTrailLong extends SingleQuadParticle {
 
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float pt) {
+    public void render(@NotNull VertexConsumer buffer, @NotNull Camera camera, float pt) {
         if(!PostEffectPipelines.isActive()) return;
         renderType.callPipeline();
 
@@ -142,7 +143,7 @@ public class ONEJCBladeTrailLong extends SingleQuadParticle {
     static BloomParticleRenderType renderType = getBloomRenderTypeByTexture(texture);
 
     @Override
-    public ParticleRenderType getRenderType() {
+    public @NotNull ParticleRenderType getRenderType() {
         return renderType;
     }
 
@@ -174,7 +175,7 @@ public class ONEJCBladeTrailLong extends SingleQuadParticle {
             double ex = er * Math.sin((double)theta2) * (double)scale;
             double ey = (double)r2 * Math.cos((double)beta2) * (double)scale;
             double ez = er * Math.cos((double)theta2) * (double)scale;
-            return new ONEJCBladeTrailLong(worldIn, x, y + 10, z, 0, (ey - sy)*3.2, 0);
+            return new ONEJCBladeTrailLong(worldIn, x, y + 10, z, 0, (ey - sy)*3.6, 0);
         }
     }
 }

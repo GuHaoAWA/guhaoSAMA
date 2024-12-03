@@ -1,13 +1,13 @@
 package com.guhao.utils;
 
 import com.guhao.GuHaoAnimations;
-import reascer.wom.gameasset.WOMAnimations;
+import com.guhao.star.efmex.StarAnimations;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.gameasset.Animations;
 
 import java.util.Arrays;
 
-public class ArrayUtils {
+public record ArrayUtils() {
     static final StaticAnimation[] EYES;
     static {
         EYES = new StaticAnimation[] {
@@ -23,9 +23,8 @@ public class ArrayUtils {
                 Animations.RUSHING_TEMPO3,
                 Animations.RUSHING_TEMPO1,
                 Animations.RUSHING_TEMPO2,
-                WOMAnimations.RUINE_AUTO_1,
+                StarAnimations.KATANA_SHEATH_DASH,
                 GuHaoAnimations.BIU,
-                WOMAnimations.KATANA_AUTO_3,
 
                 Animations.REVELATION_TWOHAND
         };
