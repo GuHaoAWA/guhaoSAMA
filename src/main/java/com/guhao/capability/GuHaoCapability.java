@@ -6,6 +6,7 @@ import com.guhao.init.ParticleType;
 import com.guhao.skills.GuHaoPassive;
 import com.guhao.skills.GuHaoSkills;
 import net.minecraft.world.item.Item;
+import reascer.wom.gameasset.WOMAnimations;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.gameasset.Animations;
@@ -47,7 +48,15 @@ public class GuHaoCapability {
                         Animations.UCHIGATANA_AUTO3,
                         GuHaoAnimations.GUHAO_BIU,
                         Animations.SWEEPING_EDGE,
-                        GuHaoAnimations.GUHAO_DASH,
+
+//                        WOMAnimations.KATANA_AUTO_1,
+//                        WOMAnimations.KATANA_AUTO_2,
+//                        WOMAnimations.KATANA_AUTO_3,
+//                        WOMAnimations.KATANA_DASH,
+//                        GuHaoAnimations.GUHAO_BIU,
+//                        WOMAnimations.HERRSCHER_AUTO_3,
+
+                        GuHaoAnimations.GUHAO_DASH_2,
                         GuHaoAnimations.NB_ATTACK)
                 .newStyleCombo(CapabilityItem.Styles.MOUNT, Animations.SPEAR_MOUNT_ATTACK)
                 .innateSkill(CapabilityItem.Styles.SHEATH, (itemstack) -> GuHaoSkills.SACRIFICE)
@@ -71,8 +80,7 @@ public class GuHaoCapability {
                 .livingMotionModifier(CapabilityItem.Styles.SHEATH, LivingMotions.SWIM, Animations.BIPED_HOLD_UCHIGATANA_SHEATHING)
                 .livingMotionModifier(CapabilityItem.Styles.SHEATH, LivingMotions.FLOAT, Animations.BIPED_HOLD_UCHIGATANA_SHEATHING)
                 .livingMotionModifier(CapabilityItem.Styles.SHEATH, LivingMotions.FALL, Animations.BIPED_HOLD_UCHIGATANA_SHEATHING)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.BLOCK, Animations.UCHIGATANA_GUARD);
-
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.BLOCK, WOMAnimations.RUINE_BLOCK);
         return builder;
     };
 

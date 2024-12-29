@@ -16,7 +16,7 @@ public record ArrayUtils() {
                 Animations.UCHIGATANA_AUTO1,
                 Animations.UCHIGATANA_AUTO3,
                 Animations.LONGSWORD_AUTO2,
-                GuHaoAnimations.GUHAO_DASH,
+                GuHaoAnimations.GUHAO_DASH_2,
                 GuHaoAnimations.GUHAO_BIU,
                 GuHaoAnimations.GUHAO_DASH,
 
@@ -25,6 +25,7 @@ public record ArrayUtils() {
                 Animations.RUSHING_TEMPO2,
                 StarAnimations.KATANA_SHEATH_DASH,
                 GuHaoAnimations.BIU,
+                GuHaoAnimations.SETTLEMENT,
 
                 Animations.REVELATION_TWOHAND
         };

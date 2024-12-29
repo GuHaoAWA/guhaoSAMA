@@ -10,6 +10,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -35,6 +36,7 @@ import java.util.UUID;
 
 public class SacrificeSkill extends WeaponInnateSkill {
     private final StaticAnimation[] animations;
+    private final Vec3 stop = new Vec3(0.07,0.07,0.07);
     public final Map<StaticAnimation, AttackAnimation> comboAnimation = Maps.newHashMap();
     private static final UUID EVENT_UUID = UUID.fromString("d706b5bc-b98b-cc49-b83e-16ae590db349");
     public static SkillDataManager.SkillDataKey<Boolean> IS_CTRL_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
@@ -47,13 +49,14 @@ public class SacrificeSkill extends WeaponInnateSkill {
         this.comboAnimation.put(Animations.UCHIGATANA_AUTO3, (AttackAnimation) Animations.RUSHING_TEMPO2);
         this.comboAnimation.put(Animations.LONGSWORD_AUTO2, (AttackAnimation) StarAnimations.KATANA_SHEATH_DASH.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
         this.comboAnimation.put(GuHaoAnimations.GUHAO_BIU, (AttackAnimation) GuHaoAnimations.BIU.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
-        this.comboAnimation.put(GuHaoAnimations.GUHAO_DASH, (AttackAnimation) GuHaoAnimations.DENG_LONG.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
+        this.comboAnimation.put(GuHaoAnimations.GUHAO_DASH_2, (AttackAnimation) GuHaoAnimations.DENG_LONG.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
 
         this.comboAnimation.put(Animations.RUSHING_TEMPO3, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
         this.comboAnimation.put(Animations.RUSHING_TEMPO1, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
         this.comboAnimation.put(Animations.RUSHING_TEMPO2, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
         this.comboAnimation.put(StarAnimations.KATANA_SHEATH_DASH, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
         this.comboAnimation.put(GuHaoAnimations.BIU, (AttackAnimation) Animations.REVELATION_TWOHAND.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false));
+        this.comboAnimation.put(GuHaoAnimations.SETTLEMENT, (AttackAnimation) GuHaoAnimations.DENG_LONG.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
 
 
         this.comboAnimation.put(Animations.REVELATION_TWOHAND, (AttackAnimation) GuHaoAnimations.GUHAO_UCHIGATANA_SCRAP.newTimePair(0.0F, 0.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false));
@@ -161,6 +164,8 @@ public class SacrificeSkill extends WeaponInnateSkill {
     @Override
     public void executeOnServer(ServerPlayerPatch executer, FriendlyByteBuf args) {
         boolean isSheathed = executer.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(GuHaoPassive.SHEATH);
+        boolean isStop = executer.getOriginal().isSprinting();
+        boolean isOnGround = executer.getOriginal().isOnGround();
         while (true) {
             if (this.comboAnimation.containsKey(executer.getAnimator().getPlayerFor(null).getAnimation())) {
                 executer.playAnimationSynchronized(this.comboAnimation.get(executer.getAnimator().getPlayerFor(null).getAnimation()), 0.0F);
@@ -170,20 +175,20 @@ public class SacrificeSkill extends WeaponInnateSkill {
             if (executer.getOriginal().isShiftKeyDown() && (executer.getSkill(GuHaoSkills.SACRIFICE).getStack() >= 10)) {
                 if (executer.getOriginal().hasEffect(Effect.GUHAO.get())) {
                     if (isSheathed) {
-                        executer.playAnimationSynchronized(GuHaoAnimations.BLOOD_JUDGEMENT, -0.196F);
-                        executer.getSkill(GuHaoSkills.SACRIFICE).setStack(6);
-                        executer.setStamina(executer.getStamina() * 0.65F);
+                        executer.playAnimationSynchronized(GuHaoAnimations.BLOOD_JUDGEMENT, -0.3F);
+                        executer.getSkill(GuHaoSkills.SACRIFICE).setStack(4);
+                        executer.setStamina(executer.getStamina() * 0.66F);
                         super.executeOnServer(executer, args);
                     } else {
                         executer.playAnimationSynchronized(GuHaoAnimations.BLOOD_JUDGEMENT, 0.0F);
-                        executer.getSkill(GuHaoSkills.SACRIFICE).setStack(5);
+                        executer.getSkill(GuHaoSkills.SACRIFICE).setStack(3);
                         executer.setStamina(executer.getStamina() * 0.5F);
                         super.executeOnServer(executer, args);
                     }
                 } else {
                     executer.playAnimationSynchronized(GuHaoAnimations.SACRIFICE, 0.0F);
                     executer.getSkill(GuHaoSkills.SACRIFICE).setStack(0);
-                    executer.setStamina(0F);
+                    executer.setStamina(0.0F);
                     super.executeOnServer(executer, args);
                 }
                 break;
@@ -196,12 +201,17 @@ public class SacrificeSkill extends WeaponInnateSkill {
                 break;
             }
 ///////////////////////////////////////////////////////////////////////////
-            if (isSheathed) {
-                executer.playAnimationSynchronized(GuHaoAnimations.GUHAO_BATTOJUTSU_DASH, -0.694F);
+            if (isOnGround && !isStop && isSheathed) {
+                executer.playAnimationSynchronized(GuHaoAnimations.SETTLEMENT, 0.0F);
                 super.executeOnServer(executer, args);
             } else {
-                executer.playAnimationSynchronized(GuHaoAnimations.GUHAO_BATTOJUTSU_DASH, 0.0F);
-                super.executeOnServer(executer, args);
+                    if (isSheathed) {
+                        executer.playAnimationSynchronized(GuHaoAnimations.GUHAO_BATTOJUTSU_DASH, -0.694F);
+                        super.executeOnServer(executer, args);
+                    } else {
+                        executer.playAnimationSynchronized(GuHaoAnimations.GUHAO_BATTOJUTSU_DASH, 0.0F);
+                        super.executeOnServer(executer, args);
+                    }
             }
             break;
         }
