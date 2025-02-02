@@ -40,9 +40,9 @@ public class PlayerTickEvent {
         if (entity == null)
             return;
         PlayerPatch<?> pp = EpicFightCapabilities.getEntityPatch(entity, PlayerPatch.class);
-        if (pp != null && !(pp.getAnimator().getPlayerFor(null).getAnimation() == GuHaoAnimations.SETTLEMENT | pp.getAnimator().getPlayerFor(null).getAnimation() == GuHaoAnimations.JIANQIE)) {
-            pp.getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f7f"));
-            pp.getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f6f"));
+        if (pp != null && (pp.getAnimator().getPlayerFor(null).getAnimation() != GuHaoAnimations.SETTLEMENT || pp.getAnimator().getPlayerFor(null).getAnimation() != GuHaoAnimations.JIANQIE)) {
+//            pp.getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f7f"));
+//            pp.getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f6f"));
         }
     }
 }

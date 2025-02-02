@@ -145,6 +145,15 @@ public class GUHAO extends WeaponItem implements IAnimatable {
             renderer.allowModification(boneName);
         }
     }
+    private <P extends Item & IAnimatable> PlayState JudgePredicate(AnimationEvent<P> event) {
+        if (transformType != null) {
+            if (this.animationprocedure.equals("1")) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("1", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+                return PlayState.CONTINUE;
+            }
+        }
+        return PlayState.STOP;
+    }
 
     private <P extends Item & IAnimatable> PlayState idlePredicate(AnimationEvent<P> event) {
         if (transformType != null) {
@@ -176,6 +185,8 @@ public class GUHAO extends WeaponItem implements IAnimatable {
     public void registerControllers(AnimationData data) {
         AnimationController procedureController = new AnimationController(this, "procedureController", 0, this::procedurePredicate);
         data.addAnimationController(procedureController);
+        AnimationController judgeController = new AnimationController(this, "judgeController", 0, this::JudgePredicate);
+        data.addAnimationController(judgeController);
         AnimationController idleController = new AnimationController(this, "idleController", 0, this::idlePredicate);
         data.addAnimationController(idleController);
     }

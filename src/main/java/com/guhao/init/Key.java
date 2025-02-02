@@ -18,7 +18,7 @@ public class Key {
     public static final KeyMapping ENDER = new KeyMapping("key.guhao.ender", GLFW.GLFW_KEY_KP_ADD, "key.categories.guhao");
     public static final KeyMapping BLOOD_BURST = new KeyMapping("key.guhao.blood_burst", GLFW.GLFW_KEY_KP_SUBTRACT, "key.categories.guhao");
     public static final KeyMapping CTRL = new KeyMapping("key.guhao.ctrl", GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.guhao");
-    public static final KeyMapping SHIFT = new KeyMapping("key.guhao.shift", GLFW.GLFW_KEY_LEFT_SHIFT, "key.categories.guhao");
+    public static final KeyMapping RIGHT = new KeyMapping("key.guhao.shift", GLFW.GLFW_MOUSE_BUTTON_2, "key.categories.guhao");
 
 
     @SubscribeEvent
@@ -26,7 +26,7 @@ public class Key {
         ClientRegistry.registerKeyBinding(ENDER);
         ClientRegistry.registerKeyBinding(BLOOD_BURST);
         ClientRegistry.registerKeyBinding(CTRL);
-//        ClientRegistry.registerKeyBinding(SHIFT);
+        ClientRegistry.registerKeyBinding(RIGHT);
     }
 
     @Mod.EventBusSubscriber({Dist.CLIENT})

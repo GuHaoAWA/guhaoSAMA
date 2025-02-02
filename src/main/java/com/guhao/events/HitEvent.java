@@ -123,7 +123,7 @@ public class HitEvent {
                                     _level.sendParticles(ParticleType.TWO_EYE.get(), entityiterator.getX(), entityiterator.getY()+1, entityiterator.getZ(), 1, 0.5, 0.5, 0.5, 0);
                                 }
                                 player1.setHealth(player1.getHealth() + 1.0F);
-                                entityiterator.hurt(DamageSource.playerAttack(player1).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 4.5F);
+                                if (entityiterator != entity) entityiterator.hurt(DamageSource.playerAttack(player1).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 4.5F);
 
                             }
                         }

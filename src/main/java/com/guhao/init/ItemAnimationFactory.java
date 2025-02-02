@@ -17,21 +17,19 @@ public class ItemAnimationFactory {
 		try {
 			ItemInHandRenderer renderer = Minecraft.getInstance().gameRenderer.itemInHandRenderer;
 			float rot = 1F;
-			if (renderer != null) {
-				Field field = ItemInHandRenderer.class.getDeclaredField("mainHandHeight");
-				field.setAccessible(true);
-				field.setFloat(renderer, rot);
-				Field field1 = ItemInHandRenderer.class.getDeclaredField("oMainHandHeight");
-				field1.setAccessible(true);
-				field1.setFloat(renderer, rot);
-				Field field2 = ItemInHandRenderer.class.getDeclaredField("offHandHeight");
-				field2.setAccessible(true);
-				field2.setFloat(renderer, rot);
-				Field field3 = ItemInHandRenderer.class.getDeclaredField("oOffHandHeight");
-				field3.setAccessible(true);
-				field3.setFloat(renderer, rot);
-			}
-		} catch (Exception e) {
+            Field field = ItemInHandRenderer.class.getDeclaredField("mainHandHeight");
+            field.setAccessible(true);
+            field.setFloat(renderer, rot);
+            Field field1 = ItemInHandRenderer.class.getDeclaredField("oMainHandHeight");
+            field1.setAccessible(true);
+            field1.setFloat(renderer, rot);
+            Field field2 = ItemInHandRenderer.class.getDeclaredField("offHandHeight");
+            field2.setAccessible(true);
+            field2.setFloat(renderer, rot);
+            Field field3 = ItemInHandRenderer.class.getDeclaredField("oOffHandHeight");
+            field3.setAccessible(true);
+            field3.setFloat(renderer, rot);
+        } catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -43,20 +41,23 @@ public class ItemAnimationFactory {
 			if (!event.player.getMainHandItem().getOrCreateTag().getString("geckoAnim").equals("") && !(event.player.getMainHandItem().getItem() instanceof GeoArmorItem)) {
 				animation = event.player.getMainHandItem().getOrCreateTag().getString("geckoAnim");
 				event.player.getMainHandItem().getOrCreateTag().putString("geckoAnim", "");
-				if (event.player.getMainHandItem().getItem() instanceof GUHAO animatable)
+				if (event.player.getMainHandItem().getItem() instanceof GUHAO animatable) {
 					if (event.player.level.isClientSide()) {
+
 						animatable.animationprocedure = animation;
 						disableUseAnim();
 					}
+				}
 			}
 			if (!event.player.getOffhandItem().getOrCreateTag().getString("geckoAnim").equals("") && !(event.player.getOffhandItem().getItem() instanceof GeoArmorItem)) {
 				animation = event.player.getOffhandItem().getOrCreateTag().getString("geckoAnim");
 				event.player.getOffhandItem().getOrCreateTag().putString("geckoAnim", "");
-				if (event.player.getOffhandItem().getItem() instanceof GUHAO animatable)
+				if (event.player.getOffhandItem().getItem() instanceof GUHAO animatable) {
 					if (event.player.level.isClientSide()) {
 						animatable.animationprocedure = animation;
 						disableUseAnim();
 					}
+				}
 			}
 		}
 	}

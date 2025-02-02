@@ -43,6 +43,7 @@ import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 import java.util.*;
 
 import static com.github.alexthe666.alexsmobs.effect.AMEffectRegistry.EXSANGUINATION;
+import static com.guhao.init.ItemAnimationFactory.disableUseAnim;
 
 public class BattleUtils {
     public BattleUtils() {
@@ -89,7 +90,7 @@ public class BattleUtils {
             ep.playSound(SoundRegistry.BLOOD_CAST.get(),1.0F,1.0F);
             Random random = new Random();
             Level world = ep.getOriginal().level;
-            LivingEntity entity =ep.getOriginal();
+            LivingEntity entity = ep.getOriginal();
             BloodSlashProjectile bloodSlash = new BloodSlashProjectile(world, entity);
             bloodSlash.setPos(entity.getEyePosition());
             bloodSlash.shoot(new Vec3(entity.getLookAngle().x(),entity.getLookAngle().y(),entity.getLookAngle().z()));
@@ -98,11 +99,12 @@ public class BattleUtils {
 //            double z = look.z;
 //            double y = look.y;
 //            bloodSlash.setDeltaMovement(x * 1.0, y * 1.0, z * 1.0);
-            bloodSlash.setDamage(random.nextFloat(15f,22f));
+            bloodSlash.setRadius(10f);
+            bloodSlash.setDamage(random.nextFloat(28f,34f));
             world.addFreshEntity(bloodSlash);
         }
         public static void sacrifice(LivingEntityPatch<?> livingEntityPatch){
-            livingEntityPatch.playSound(Sounds.LAUGH,1.0F,1.0F);
+            livingEntityPatch.playSound(Sounds.LAUGH,1.0F,1.0F,1.0F);
             Level level = livingEntityPatch.getOriginal().getLevel();
             Vec3 position = livingEntityPatch.getOriginal().position();
             double x = position.x;
@@ -125,13 +127,13 @@ public class BattleUtils {
 
             List<Entity> _entfound = level.getEntitiesOfClass(Entity.class, new AABB(position, position).inflate(50 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(position))).toList();
             for (Entity entityiterator : _entfound) {
-                if ((entityiterator instanceof LivingEntity livingEntity) && (!(entityiterator instanceof Player))) {
+                if ((entityiterator instanceof LivingEntity livingEntity) && (!(entityiterator == livingEntityPatch.getOriginal()))) {
                     if (livingEntity.getAttributes().hasAttribute(EpicFightAttributes.STAMINA_REGEN.get())) livingEntity.getAttribute(EpicFightAttributes.STAMINA_REGEN.get()).setBaseValue(livingEntity.getAttribute(EpicFightAttributes.STAMINA_REGEN.get()).getBaseValue() * 0.5);
                     if (livingEntity.getAttributes().hasAttribute(EpicFightAttributes.MAX_STAMINA.get())) livingEntity.getAttribute(EpicFightAttributes.MAX_STAMINA.get()).setBaseValue(livingEntity.getAttribute(EpicFightAttributes.MAX_STAMINA.get()).getBaseValue() * 0.5);
                     if (livingEntity.getAttributes().hasAttribute(livingEntity.getAttribute(Attributes.ARMOR).getAttribute())) livingEntity.getAttribute(Attributes.ARMOR).setBaseValue(0);
                     if (livingEntity.getAttributes().hasAttribute(Attributes.ARMOR_TOUGHNESS)) livingEntity.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue(0);
                     livingEntity.setTicksFrozen(100);
-                    livingEntity.hurt(DamageSource.playerAttack(level.getNearestPlayer(livingEntityPatch.getOriginal(), -1)), 1);
+                    livingEntity.hurt(DamageSource.mobAttack(livingEntityPatch.getOriginal()), 1);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(livingEntity, LivingEntityPatch.class);
                     if (entitypatch != null) {
 //                        entitypatch.playAnimationSynchronized(Animations.BIPED_KNOCKDOWN, 0.0F);
@@ -179,7 +181,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3((x + 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(),-1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -195,7 +197,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3((x - 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -211,7 +213,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3(x, y, z+4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -227,7 +229,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3(x, y, z-4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -305,7 +307,7 @@ public class BattleUtils {
                             _level.playSound(null, new BlockPos(entityiterator.getX(), entityiterator.getY(), entityiterator.getZ()), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BLOOD.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.8f,1.2f));
                             _level.sendParticles(EpicFightParticles.EVISCERATE.get(), livingEntity.getX(), livingEntity.getY() + 1.2, livingEntity.getZ(), 1, 0.25, 0.25, 0.25, 0);
                         }
-                        livingEntity.hurt(DamageSource.playerAttack(world.getNearestPlayer(ep.getOriginal(), -1)).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier * 2.5F);
+                        livingEntity.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier * 2.5F);
                         livingEntity.removeEffect(EXSANGUINATION);
                         //LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                         HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -394,6 +396,18 @@ public class BattleUtils {
         public static void blood_judgement_geo(LivingEntityPatch<?> ep) {
             ItemStack itemstack = ep.getOriginal().getMainHandItem();
             if (itemstack.getItem() instanceof GUHAO) itemstack.getOrCreateTag().putString("geckoAnim", "1");
+//            Minecraft minecraft = Minecraft.getInstance();
+//            minecraft.options.fov = 100;
+//            if (ep.getOriginal().getOffhandItem().getItem() instanceof GUHAO animatable) {
+//                if (ep.getOriginal().level.isClientSide()) {
+//                    animatable.animationprocedure = "1";
+//                    disableUseAnim();
+//                }
+//            }
+        }
+        public static void blood_judgement_geo2(LivingEntityPatch<?> ep) {
+            ItemStack itemstack = ep.getOriginal().getMainHandItem();
+            if (itemstack.getItem() instanceof GUHAO) itemstack.getOrCreateTag().putString("geckoAnim", "0");
         }
     }
 }
