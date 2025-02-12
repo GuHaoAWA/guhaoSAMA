@@ -16,6 +16,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -23,6 +24,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import reascer.wom.gameasset.WOMAnimations;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -41,10 +43,13 @@ public class HitEvent {
         if (entity == null)
             return;
         if (entity instanceof LivingEntity livingEntity) {
+
             if (!livingEntity.hasEffect(new MobEffectInstance(EXSANGUINATION).getEffect())) livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(EXSANGUINATION).getEffect(), 200, 1, false, true));
             else livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(EXSANGUINATION).getEffect(), 200, livingEntity.getEffect(EXSANGUINATION).getAmplifier() + 1, false, true));
         }
-        if (world instanceof ServerLevel _level) _level.sendParticles(ParticleType.TWO_EYE.get(), x, y+0.5, z, 1, 0.5, 0.5, 0.5, 0);
+        if (world instanceof ServerLevel _level) {
+            _level.sendParticles(ParticleType.TWO_EYE.get(), x, y + 0.5, z, 1, 0.5, 0.5, 0.5, 0);
+        }
         Player player1 = (Player) player;
         PlayerPatch<?> pp = EpicFightCapabilities.getEntityPatch(player1, PlayerPatch.class);
         DynamicAnimation animation = pp.getAnimator().getPlayerFor(null).getAnimation();
@@ -84,7 +89,7 @@ public class HitEvent {
                         serverLevel.sendParticles(particle, x, y, z, 10, velocity.x, velocity.y, velocity.z, 100.0);
                     }
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
-                    if (entitypatch != null) entitypatch.applyStun(StunType.LONG, 5.0f);
+                    if (entitypatch != null) entitypatch.applyStun(StunType.HOLD, 5.0f);
                     entity.hurt(DamageSource.playerAttack(player1).bypassArmor().damageHelmet().bypassInvul(), random.nextFloat(20.0F, 30.0F));
                 }
                 MinecraftForge.EVENT_BUS.unregister(this);
@@ -123,8 +128,7 @@ public class HitEvent {
                                     _level.sendParticles(ParticleType.TWO_EYE.get(), entityiterator.getX(), entityiterator.getY()+1, entityiterator.getZ(), 1, 0.5, 0.5, 0.5, 0);
                                 }
                                 player1.setHealth(player1.getHealth() + 1.0F);
-                                if (entityiterator != entity) entityiterator.hurt(DamageSource.playerAttack(player1).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 4.5F);
-
+                                if (entityiterator != entity) entityiterator.hurt(DamageSource.playerAttack(player1).bypassArmor().damageHelmet().bypassInvul().setMagic(), 4.5F);
                             }
                         }
                     }
@@ -149,7 +153,9 @@ public class HitEvent {
                         }
 
                         private void run() {
-                            entity.hurt(DamageSource.playerAttack(player1).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 7.5F);
+                            entity.hurt(DamageSource.playerAttack(player1).bypassArmor().damageHelmet().bypassInvul().setMagic(), 7.5F);
+                            LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
+                            if (entitypatch != null) entitypatch.applyStun(StunType.HOLD, 3.0f);
                             if (world instanceof ServerLevel _level) {
                                 Random r = new Random();
                                 _level.sendParticles(ParticleType.ONE_JC_BLOOD_JUDGEMENT.get(), x, y, z, 1, 0.15, 0, 0.15, 0);
@@ -177,12 +183,13 @@ public class HitEvent {
                                 }
 
                                 private void run() {
+                                    if (entitypatch != null) entitypatch.applyStun(StunType.HOLD, 3.0f);
                                     if (world instanceof ServerLevel _level) {
                                         Random r = new Random();
                                         _level.sendParticles(ParticleType.ONE_JC_BLOOD_JUDGEMENT.get(), x, y, z, 1, 0.15, 0, 0.15, 0);
                                         _level.playSound(null, new BlockPos(x, y, z), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BIU.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.75f,1.25f));
                                     }
-                                    entity.hurt(DamageSource.playerAttack(player1).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 7.5F);
+                                    entity.hurt(DamageSource.playerAttack(player1).bypassArmor().damageHelmet().bypassInvul().setMagic(), 7.5F);
                                     MinecraftForge.EVENT_BUS.unregister(this);
                                 }
                             }.start(world, 10);

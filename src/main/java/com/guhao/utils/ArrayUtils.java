@@ -2,6 +2,7 @@ package com.guhao.utils;
 
 import com.guhao.GuHaoAnimations;
 import com.guhao.star.efmex.StarAnimations;
+import reascer.wom.gameasset.WOMAnimations;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.gameasset.Animations;
 
@@ -12,22 +13,22 @@ public record ArrayUtils() {
     static {
         EYES = new StaticAnimation[] {
 
-                Animations.TACHI_AUTO3,
-                Animations.UCHIGATANA_AUTO1,
-                Animations.UCHIGATANA_AUTO3,
-                Animations.LONGSWORD_AUTO2,
+                WOMAnimations.KATANA_AUTO_1,
+                WOMAnimations.KATANA_AUTO_2,
+                WOMAnimations.KATANA_AUTO_3,
+                Animations.TACHI_AUTO2,
                 GuHaoAnimations.GUHAO_DASH_2,
-                GuHaoAnimations.GUHAO_BIU,
                 GuHaoAnimations.GUHAO_DASH,
+                GuHaoAnimations.HERRSCHER_AUTO_3,
 
                 Animations.RUSHING_TEMPO3,
                 Animations.RUSHING_TEMPO1,
                 Animations.RUSHING_TEMPO2,
-                StarAnimations.KATANA_SHEATH_DASH,
-                GuHaoAnimations.BIU,
+                GuHaoAnimations.EF_UCHIGATANA_SHEATHING_DASH,
                 GuHaoAnimations.SETTLEMENT,
+                StarAnimations.KATANA_FATAL_DRAW_SECOND_NEW,
 
-                Animations.REVELATION_TWOHAND
+                GuHaoAnimations.GUHAO_BIU,
         };
     }
     public static boolean isEyes(StaticAnimation staticAnimation) {

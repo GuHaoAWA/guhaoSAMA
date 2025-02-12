@@ -181,7 +181,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3((x + 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).bypassArmor().damageHelmet().bypassInvul().setMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -197,7 +197,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3((x - 4), y, z);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).bypassArmor().damageHelmet().bypassInvul().setMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -213,7 +213,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3(x, y, z+4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).bypassArmor().damageHelmet().bypassInvul().setMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -229,7 +229,7 @@ public class BattleUtils {
                 final Vec3 _center = new Vec3(x, y, z-4);
                 List<Entity> _entfound = world.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(7 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : _entfound) {
-                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), 12);
+                    if (!(world.getNearestPlayer(ep.getOriginal(),-1) == null)) entityiterator.hurt(DamageSource.mobAttack(ep.getOriginal()).bypassArmor().damageHelmet().bypassInvul().setMagic(), 12);
                     entityiterator.setAirSupply(0);
                     LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                     HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -307,7 +307,7 @@ public class BattleUtils {
                             _level.playSound(null, new BlockPos(entityiterator.getX(), entityiterator.getY(), entityiterator.getZ()), ForgeRegistries.SOUND_EVENTS.getValue(Sounds.BLOOD.getLocation()), SoundSource.PLAYERS, r.nextFloat(0.75f,1.0f), r.nextFloat(0.8f,1.2f));
                             _level.sendParticles(EpicFightParticles.EVISCERATE.get(), livingEntity.getX(), livingEntity.getY() + 1.2, livingEntity.getZ(), 1, 0.25, 0.25, 0.25, 0);
                         }
-                        livingEntity.hurt(DamageSource.mobAttack(ep.getOriginal()).setMagic().bypassArmor().damageHelmet().bypassInvul().bypassMagic(), amplifier * 2.5F);
+                        livingEntity.hurt(DamageSource.mobAttack(ep.getOriginal()).bypassArmor().damageHelmet().bypassInvul().setMagic(), amplifier * 2.5F);
                         livingEntity.removeEffect(EXSANGUINATION);
                         //LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entityiterator, LivingEntityPatch.class);
                         HurtableEntityPatch<?> hurtableEntityPatch = EpicFightCapabilities.getEntityPatch(entityiterator, HurtableEntityPatch.class);
@@ -407,7 +407,7 @@ public class BattleUtils {
         }
         public static void blood_judgement_geo2(LivingEntityPatch<?> ep) {
             ItemStack itemstack = ep.getOriginal().getMainHandItem();
-            if (itemstack.getItem() instanceof GUHAO) itemstack.getOrCreateTag().putString("geckoAnim", "0");
+            if (itemstack.getItem() instanceof GUHAO) itemstack.getOrCreateTag().putString("geckoAnim", "empty");
         }
     }
 }

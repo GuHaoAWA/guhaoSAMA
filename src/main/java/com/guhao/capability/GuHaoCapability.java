@@ -8,6 +8,8 @@ import com.guhao.skills.GuHaoSkills;
 import net.minecraft.world.item.Item;
 import reascer.wom.gameasset.WOMAnimations;
 import yesman.epicfight.api.animation.LivingMotions;
+import yesman.epicfight.api.animation.property.AnimationProperty;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
@@ -42,20 +44,18 @@ public class GuHaoCapability {
                         GuHaoAnimations.GUHAO_UCHIGATANA_SHEATHING_DASH,
                         GuHaoAnimations.GUHAO_UCHIGATANA_SHEATH_AIR_SLASH)
                 .newStyleCombo(CapabilityItem.Styles.TWO_HAND,
-                        Animations.TACHI_AUTO3,
-                        Animations.UCHIGATANA_AUTO1,
-                        Animations.LONGSWORD_AUTO2,
-                        Animations.UCHIGATANA_AUTO3,
-                        GuHaoAnimations.GUHAO_BIU,
-                        Animations.SWEEPING_EDGE,
-
-//                        WOMAnimations.KATANA_AUTO_1,
-//                        WOMAnimations.KATANA_AUTO_2,
-//                        WOMAnimations.KATANA_AUTO_3,
-//                        WOMAnimations.KATANA_DASH,
+//                        Animations.TACHI_AUTO3,
+//                        Animations.UCHIGATANA_AUTO1,
+//                        Animations.LONGSWORD_AUTO2,
+//                        Animations.UCHIGATANA_AUTO3,
 //                        GuHaoAnimations.GUHAO_BIU,
-//                        WOMAnimations.HERRSCHER_AUTO_3,
+//                        Animations.SWEEPING_EDGE,
 
+                        WOMAnimations.KATANA_AUTO_1,
+                        WOMAnimations.KATANA_AUTO_2,
+                        WOMAnimations.KATANA_AUTO_3,
+                        Animations.TACHI_AUTO2,
+                        GuHaoAnimations.HERRSCHER_AUTO_3,
                         GuHaoAnimations.GUHAO_DASH_2,
                         GuHaoAnimations.NB_ATTACK)
                 .newStyleCombo(CapabilityItem.Styles.MOUNT, Animations.SPEAR_MOUNT_ATTACK)

@@ -32,6 +32,7 @@ import net.minecraftforge.network.PacketDistributor;
 import reascer.wom.animation.attacks.BasicMultipleAttackAnimation;
 import reascer.wom.animation.attacks.SpecialAttackAnimation;
 import reascer.wom.gameasset.WOMColliders;
+import reascer.wom.skill.weaponinnate.RegierungSkill;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
@@ -49,6 +50,7 @@ import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.particle.EpicFightParticles;
+import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
@@ -85,6 +87,7 @@ public class GuHaoAnimations {
     public static StaticAnimation GUHAO_BATTOJUTSU_DASH;
     public static StaticAnimation GUHAO_UCHIGATANA_SHEATHING_AUTO;
     public static StaticAnimation GUHAO_UCHIGATANA_SHEATHING_DASH;
+    public static StaticAnimation EF_UCHIGATANA_SHEATHING_DASH;
     public static StaticAnimation GUHAO_UCHIGATANA_SHEATH_AIR_SLASH;
     public static StaticAnimation GUHAO_DASH;
     public static StaticAnimation GUHAO_DASH_2;
@@ -98,6 +101,7 @@ public class GuHaoAnimations {
     public static StaticAnimation GUHAO_UCHIGATANA_SCRAP;
     public static StaticAnimation JIANQIE;
     public static StaticAnimation SETTLEMENT;
+    public static StaticAnimation HERRSCHER_AUTO_3;
 
     private static void register() {
         HumanoidArmature biped = Armatures.BIPED;
@@ -178,7 +182,6 @@ public class GuHaoAnimations {
                                 }, AnimationEvent.Side.CLIENT),
                                 AnimationEvent.TimeStampedEvent.create(0.8F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_blade(ep), AnimationEvent.Side.SERVER)
                         );
-//                        .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(0.5f, 1.15f, 16, biped.toolR, InteractionHand.MAIN_HAND)));
         GUHAO_UCHIGATANA_SHEATHING_AUTO = new BasicAttackAnimation(0.05F, 0.0F, 0.06F, 0.65F, null, biped.toolR, "biped/uchigatana_sheath_auto", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(30.0F))
@@ -187,14 +190,17 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
                         AnimationEvent.TimeStampedEvent.create(0.055F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_blade(ep), AnimationEvent.Side.SERVER),
                 });
-//                .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(0f, 10.0f, 6, biped.toolR, InteractionHand.MAIN_HAND)));
-        GUHAO_UCHIGATANA_SHEATHING_DASH = new DashAttackAnimation(0.05F, 0.05F, 0.2F, 0.35F, 0.65F, null, biped.toolR, "biped/uchigatana_sheath_dash", biped)
+        GUHAO_UCHIGATANA_SHEATHING_DASH = new DashAttackAnimation(0.05F, 0.05F, 0.2F, 0.35F, 0.65F, null, biped.toolR, "biped/uchigatana_sheath_dash_guhao", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_SHARP)
                 .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
                         AnimationEvent.TimeStampedEvent.create(0.345F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_blade(ep), AnimationEvent.Side.SERVER),
                 });
-//                .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(0f, 10.0f, 6, biped.toolL, InteractionHand.MAIN_HAND)));
+        EF_UCHIGATANA_SHEATHING_DASH = new DashAttackAnimation(0.05F, 0.05F, 0.2F, 0.35F, 0.65F, null, biped.toolR, "biped/uchigatana_sheath_dash", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_SHARP)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD)
+                .addProperty(AnimationProperty.AttackAnimationProperty.EXTRA_COLLIDERS, 2)
+                .addProperty(AnimationProperty.ActionAnimationProperty.RESET_PLAYER_COMBO_COUNTER, false);
         GUHAO_UCHIGATANA_SHEATH_AIR_SLASH = (new AirSlashAnimation(0.1F, 0.1F, 0.16F, 0.3F, null, biped.toolR, "biped/uchigatana_sheath_airslash", biped))
                 .addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(30.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.adder(2.0F))
@@ -202,7 +208,6 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 2.0F)
                 .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
                         AnimationEvent.TimeStampedEvent.create(0.155F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_blade(ep), AnimationEvent.Side.SERVER),});
-//                .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(0.1f, 0.175f, 6, biped.toolR, InteractionHand.MAIN_HAND)));
         BIU = (new BasicAttackAnimation(0.1F, 0.315F,0.315F, 0.385F, 1.05F, GuHaoColliderPreset.ENDER_LASER, biped.toolR, "biped/biu", biped))
                 .addProperty(AnimationProperty.AttackPhaseProperty.PARTICLE, EpicFightParticles.BLADE_RUSH_SKILL)
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.NONE)
@@ -250,12 +255,15 @@ public class GuHaoAnimations {
                 }, AnimationEvent.Side.CLIENT));
         GUHAO_BIU = (new BasicAttackAnimation(0.1F, 0.315F,0.315F, 0.385F, 1.05F, GuHaoColliderPreset.ENDER_LASER, biped.toolR, "biped/guhao_biu", biped))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.5F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(34.4F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.PARTICLE, EpicFightParticles.BLADE_RUSH_SKILL)
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.NONE)
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, SoundEvents.BLAZE_SHOOT)
                 .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, SoundEvents.FIREWORK_ROCKET_BLAST)
                 .addProperty(AnimationProperty.AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.0F)
                 .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
+                .addProperty(AnimationProperty.AttackAnimationProperty.EXTRA_COLLIDERS, 2)
+                .addProperty(AnimationProperty.ActionAnimationProperty.RESET_PLAYER_COMBO_COUNTER, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.195F, (entitypatch, self, params) -> {
                     if (entitypatch instanceof PlayerPatch) {
@@ -315,7 +323,7 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.RESET_PLAYER_COMBO_COUNTER, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.7F, 1.32F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[]{
-                        AnimationEvent.TimeStampedEvent.create(0.0F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_geo(ep), AnimationEvent.Side.BOTH),
+//                        AnimationEvent.TimeStampedEvent.create(0.0F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_geo(ep), AnimationEvent.Side.BOTH),
                         //AnimationEvent.TimeStampedEvent.create(0f, (ep, anim, objs) -> CameraEvents.SetAnim(BLOOD_JUDGEMENT_C, ep.getOriginal(), true), AnimationEvent.Side.CLIENT),
                         AnimationEvent.TimeStampedEvent.create(0.295F, Animations.ReusableSources.PLAY_SOUND, AnimationEvent.Side.SERVER).params(EpicFightSounds.SWORD_IN),
                         AnimationEvent.TimeStampedEvent.create(0.412F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_sound_1(ep), AnimationEvent.Side.SERVER),
@@ -341,7 +349,7 @@ public class GuHaoAnimations {
                         AnimationEvent.TimeStampedEvent.create(2.946F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_blade(ep), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(2.9465F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_needles(ep), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(2.948F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_p2(ep), AnimationEvent.Side.CLIENT),
-                        AnimationEvent.TimeStampedEvent.create(3.165F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_geo2(ep), AnimationEvent.Side.BOTH),
+//                        AnimationEvent.TimeStampedEvent.create(3.165F, (ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_geo2(ep), AnimationEvent.Side.BOTH),
                 })
 //                .addEvents(AnimationProperty.StaticAnimationProperty.TIME_PERIOD_EVENTS, new AnimationEvent.TimePeriodEvent[] {
 //                        AnimationEvent.TimePeriodEvent.create(2.94F,3.149999999999999999F,(ep, anim, objs) -> BattleUtils.Guhao_Battle_utils.blood_judgement_hurt(ep), AnimationEvent.Side.SERVER)
@@ -426,6 +434,7 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD)
                 .addProperty(AnimationProperty.AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.0F)
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK,false)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, (a1,b1,c1,d1) -> 0.333F)
                 .addEvents(
                         AnimationEvent.TimeStampedEvent.create(0.15F, Animations.ReusableSources.PLAY_SOUND, AnimationEvent.Side.CLIENT).params(EpicFightSounds.SWORD_IN),
                         AnimationEvent.TimeStampedEvent.create(0.1501F, (ep, anim, objs) -> {
@@ -485,7 +494,7 @@ public class GuHaoAnimations {
                     }
 
                 }, AnimationEvent.Side.SERVER));
-
+        HERRSCHER_AUTO_3 = (new BasicMultipleAttackAnimation(0.2F, "biped/herrscher_auto_3", biped, new AttackAnimation.Phase(0.0F, 0.45F, 0.55F, 0.75F, Float.MAX_VALUE, biped.toolR, WOMColliders.HERSCHER_CHARGE_1))).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.6F)).addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.multiplier(5.0F)).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.NONE).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.6F);
         SETTLEMENT = (new SpecialAttackAnimation(0.2F, 0.35F, 0.35F, 0.75F, 1.05F, WOMColliders.FATAL_DRAW_DASH, biped.rootJoint, "biped/settlement", biped))
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_SHARP)
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
@@ -495,7 +504,7 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOCROT_TARGET)
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
-                    PlayerPatch<?> pp1 = EpicFightCapabilities.getEntityPatch(entitypatch.getOriginal(), PlayerPatch.class);
+                        PlayerPatch<?> pp1 = EpicFightCapabilities.getEntityPatch(entitypatch.getOriginal(), PlayerPatch.class);
                     if (pp1 != null) {
                         pp1.getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, UUID.fromString("f6f8c8d8-6e54-4b02-8f18-7c6f3e6e3f6f"), (event) -> {
                             event.setResult(AttackResult.ResultType.MISSED);
@@ -548,6 +557,7 @@ public class GuHaoAnimations {
         }, AnimationEvent.Side.SERVER), AnimationEvent.TimeStampedEvent.create(1.9F, (entitypatch, self, params) -> {
             entitypatch.playSound(EpicFightSounds.WHOOSH, 0.0F, 0.0F);
         }, AnimationEvent.Side.SERVER));
+
     }
 
 

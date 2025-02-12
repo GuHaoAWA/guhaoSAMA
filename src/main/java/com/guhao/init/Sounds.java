@@ -22,6 +22,7 @@ public class Sounds {
     public static final SoundEvent DAO3 = RegSound("dao3");
     public static final SoundEvent BIU = RegSound("biu");
     public static final SoundEvent BLOOD = RegSound("blood");
+    public static final SoundEvent CHARGE = RegSound("charge");
 
     public Sounds() {
     }

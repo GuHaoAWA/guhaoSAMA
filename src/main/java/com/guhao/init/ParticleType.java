@@ -28,6 +28,7 @@ public class ParticleType {
     public static final RegistryObject<SimpleParticleType> RING;
     public static final RegistryObject<SimpleParticleType> RED_RING;
     public static final RegistryObject<SimpleParticleType> BLOOD_FIRE_FLAME;
+    public static final RegistryObject<SimpleParticleType> BLOOD_FIRE_FLAME2;
     public static final RegistryObject<SimpleParticleType> BLOOD_JUDGEMENT;
     public static final RegistryObject<SimpleParticleType> ONE_JC_BLOOD_JUDGEMENT;
     public static final RegistryObject<SimpleParticleType> ONE_JC_BLOOD_JUDGEMENT_LONG;
@@ -45,6 +46,7 @@ public class ParticleType {
         PE.register(RING.get(), RingParticle.RingParticleProvider::new);
         PE.register(RED_RING.get(), RedRingParticle.RedRingParticleProvider::new);
         PE.register(BLOOD_FIRE_FLAME.get(), BloodFireParticle.SmallFlameProvider::new);
+        PE.register(BLOOD_FIRE_FLAME2.get(), Flameparticle2Particle.FlameparticleParticle2Provider::new);
         PE.register(BLOOD_JUDGEMENT.get(), BloodJudgementParticle.Provider::new);
         PE.register(ONE_JC_BLOOD_JUDGEMENT.get(), ONEJCBladeTrail.Provider::new);
         PE.register(ONE_JC_BLOOD_JUDGEMENT_LONG.get(), ONEJCBladeTrailLong.Provider::new);
@@ -65,6 +67,7 @@ public class ParticleType {
         TWO_EYE = PARTICLES.register("two_eye", () -> new SimpleParticleType(true));
         RED_RING = PARTICLES.register("red_ring", () -> new SimpleParticleType(true));
         BLOOD_FIRE_FLAME = PARTICLES.register("blood_fire_flame", () -> new SimpleParticleType(true));
+        BLOOD_FIRE_FLAME2 = PARTICLES.register("blood_fire_flame_2", () -> new SimpleParticleType(true));
         BLOOD_JUDGEMENT = PARTICLES.register("blood_judgement", () -> new SimpleParticleType(true));
         ONE_JC_BLOOD_JUDGEMENT = PARTICLES.register("one_jc_blood_judgement", () -> new HitParticleType(true));
         ONE_JC_BLOOD_JUDGEMENT_LONG = PARTICLES.register("one_jc_blood_judgement_long", () -> new HitParticleType(true));

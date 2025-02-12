@@ -62,7 +62,7 @@ public class GUHAO extends WeaponItem implements IAnimatable {
 
             public @NotNull Ingredient getRepairIngredient() {return Ingredient.of(new ItemStack(Items.ENDER_EYE));}
 
-              }, 3, -1.9f,
+              }, 3, -2.2f,
                 new Item.Properties().tab(
 //                        StellarisdlcModTabs.STELLARISDLC
                         StellariscraftModTabs.TAB_STELLARIS_CRAFT
@@ -157,12 +157,13 @@ public class GUHAO extends WeaponItem implements IAnimatable {
 
     private <P extends Item & IAnimatable> PlayState idlePredicate(AnimationEvent<P> event) {
         if (transformType != null) {
-            if (this.animationprocedure.equals("empty")) {
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("0", ILoopType.EDefaultLoopTypes.LOOP));
-                return PlayState.CONTINUE;
-            }
+
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("0", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+
         }
-        return PlayState.STOP;
+        return PlayState.CONTINUE;
+
     }
 
     private <P extends Item & IAnimatable> PlayState procedurePredicate(AnimationEvent<P> event) {

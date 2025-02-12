@@ -223,7 +223,7 @@ public class TrailParticleGuhao extends TextureSheetParticle {
 
             visibleTrail = true;
         }
-        //////////////////////
+        if ((EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, entitypatch.getOriginal().getMainHandItem()) >= 1)) {
         for (int i = 0; i < finalStartPositions.size(); i++) {
             Vec3 startPos = finalStartPositions.get(i);
             Vec3 endPos = finalEndPositions.get(i);
@@ -236,7 +236,7 @@ public class TrailParticleGuhao extends TextureSheetParticle {
             for (int j = 0; j < particleCount; j++) {
                 Vec3 particlePos = startPos.add(direction.scale(j * interval));
                 level.addParticle(EpicFightParticles.BLOOD.get(), true, particlePos.x, particlePos.y, particlePos.z, speed * direction.x, speed * direction.y, speed * direction.z);
-                if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, (entitypatch.getOriginal().getMainHandItem())) >= 1) {
+
                     // 火！
                     double firespeed = speed * 0.32;
                     level.addParticle(ParticleType.BLOOD_FIRE_FLAME.get(), true, particlePos.x, particlePos.y, particlePos.z, firespeed * direction.x, firespeed * direction.y, firespeed * direction.z);
