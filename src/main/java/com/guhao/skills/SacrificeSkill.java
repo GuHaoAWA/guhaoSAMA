@@ -205,7 +205,7 @@ public class SacrificeSkill extends WeaponInnateSkill {
         boolean isStop = executer.getOriginal().isSprinting();
         boolean isOnGround = executer.getOriginal().isOnGround();
         while (true) {
-            if (executer.getTarget() != null && ((executer.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 13 && (executer.getTarget().getHealth() <= executer.getTarget().getMaxHealth() * 0.1f) || (executer.getTarget().getHealth() <= 10.0f)) && !executer.getOriginal().isOnGround())) {
+            if (executer.getTarget() != null && ((executer.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 13 && ((executer.getTarget().getHealth() <= executer.getTarget().getMaxHealth() * 0.1f) || (executer.getTarget().getHealth() <= 10.0f))) && !executer.getOriginal().isOnGround())) {
                 executer.playAnimationSynchronized(WOMAnimations.AGONY_CLAWSTRIKE.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, (a,b,c,d) -> 0.75F)
                         .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
                     LivingEntity target = entitypatch.getTarget();

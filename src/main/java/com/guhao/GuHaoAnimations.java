@@ -162,7 +162,7 @@ public class GuHaoAnimations {
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.adder(2.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.adder(3.0F)));
 //                .addProperty(ClientAnimationProperties.TRAIL_EFFECT, newTFL(newTF(0.16f, 10.0f, 6, biped.toolR, InteractionHand.MAIN_HAND)));
-        GUHAO_BATTOJUTSU_DASH = new AttackAnimation(0.15F, 0.43F, 0.7F, 0.92F, 1.4F, GuHaoColliderPreset.SPHERE_COLLIDER, biped.rootJoint, "biped/battojutsu_dash", biped)
+        GUHAO_BATTOJUTSU_DASH = new AttackAnimation(0.15F, 0.43F, 0.7F, 0.92F, 1.4F, GuHaoColliderPreset.GUHAO_BATTOJUTSU_DASH, biped.rootJoint, "biped/battojutsu_dash", biped)
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
                         .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_SHARP)
@@ -310,13 +310,12 @@ public class GuHaoAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.adder(4.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG),
-                new AttackAnimation.Phase(1.20f, 2.8F, 3.164F, 3.2F, 3.2F, biped.rootJoint, GuHaoColliderPreset.SPHERE_COLLIDER)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(100.0F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.56F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.adder(3.6F))
+                new AttackAnimation.Phase(1.20f, 2.85F, 3.174F, 3.2F, Float.MAX_VALUE, biped.rootJoint, GuHaoColliderPreset.GUHAO_BATTOJUTSU_DASH)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(SourceTags.WEAPON_INNATE))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.NEUTRALIZE)))
                 .addProperty(AnimationProperty.AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.0F)
+                .addProperty(AnimationProperty.AttackAnimationProperty.EXTRA_COLLIDERS, 2)
                 .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)

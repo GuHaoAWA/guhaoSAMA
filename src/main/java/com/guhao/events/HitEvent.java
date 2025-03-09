@@ -53,6 +53,9 @@ public class HitEvent {
         Player player1 = (Player) player;
         PlayerPatch<?> pp = EpicFightCapabilities.getEntityPatch(player1, PlayerPatch.class);
         DynamicAnimation animation = pp.getAnimator().getPlayerFor(null).getAnimation();
+        if (pp.getAnimator().getPlayerFor(null).getAnimation() == WOMAnimations.AGONY_CLAWSTRIKE) {
+            entity.push(entity.getX(),entity.getEyeY() + 25.0f,entity.getZ());
+        }
         new Object() {
             private int ticks = 0;
             private float waitTicks;
